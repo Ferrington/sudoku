@@ -4,10 +4,8 @@ import SudokuControls from './components/SudokuControls.vue';
 import SudokuGrid from './components/SudokuGrid.vue';
 import { useMenuStore } from './stores/menu';
 import { useSelectedStore } from './stores/selected';
-import { useSudokuStore } from './stores/sudoku';
 
-const { setValueOnSelected } = useSudokuStore();
-const { arrowKeyMove } = useSelectedStore();
+const { arrowKeyMove, setValueOnSelected } = useSelectedStore();
 const { setActiveMenu } = useMenuStore();
 
 window.addEventListener('keydown', (e) => {
@@ -46,7 +44,7 @@ window.addEventListener('keydown', (e) => {
 }
 
 main {
-  padding: 10px;
+  padding: 50px;
   display: flex;
   gap: 20px;
 }

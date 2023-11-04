@@ -1,13 +1,17 @@
 import { BOARD_SIZE } from '@/assets/constants';
-import type { Coords } from '@/types';
+import type { Coords, PencilMark } from '@/types';
+import { allContainDigit } from '@/utils/utils';
 import { defineStore, storeToRefs } from 'pinia';
 import { ref } from 'vue';
+import { useMenuStore } from './menu';
 import { useSudokuStore } from './sudoku';
 
 export const useSelectedStore = defineStore('selected', () => {
   const selectedCells = ref<Coords[]>([]);
   const sudokuStore = useSudokuStore();
   const { grid } = storeToRefs(sudokuStore);
+  const menuStore = useMenuStore();
+  const { activeMenu } = storeToRefs(menuStore);
 
   function setSelected([y, x]: Coords) {
     selectedCells.value = [[y, x]];
@@ -59,11 +63,79 @@ export const useSelectedStore = defineStore('selected', () => {
     }
   }
 
+  function setValueOnSelected(digit: number) {
+    if (digit === 0) {
+      clearValuesOnSelected();
+    }
+
+    if (activeMenu.value === 'digit') {
+      setDigitOnSelected(digit);
+    } else {
+      setPencilMarkOnSelected(digit, activeMenu.value);
+    }
+  }
+
+  function clearValuesOnSelected() {
+    selectedCells.value.forEach(([y, x]) => {
+      const cell = grid.value[y][x];
+      if (cell.given) return;
+      cell.value = 0;
+      cell.pencilMarks = [];
+    });
+  }
+
+  function setDigitOnSelected(digit: number) {
+    const allSelectedEqual = allContainDigit(
+      selectedCells.value.map(([y, x]) => grid.value[y][x].value),
+      digit
+    );
+
+    selectedCells.value.forEach(([y, x]) => {
+      const cell = grid.value[y][x];
+      if (cell.given) return;
+      cell.value = cell.value === digit && allSelectedEqual ? 0 : digit;
+      cell.pencilMarks = [];
+    });
+  }
+
+  function setPencilMarkOnSelected(digit: number, type: PencilMark) {
+    const allCellsContainDigit = allContainDigit(
+      selectedCells.value.map(([y, x]) => grid.value[y][x].pencilMarks),
+      digit
+    );
+
+    selectedCells.value.forEach(([y, x]) => {
+      const cell = grid.value[y][x];
+      if (cell.given) return;
+      if (cell.value > 0) return;
+      if (digit === 0) {
+        cell.pencilMarks = [];
+        return;
+      }
+      if (cell.pencilMarkType !== type) {
+        cell.pencilMarks = [];
+        cell.pencilMarkType = type;
+      }
+
+      if (cell.pencilMarks.includes(digit) && allCellsContainDigit) {
+        cell.pencilMarks = cell.pencilMarks.filter((n) => n !== digit);
+      } else if (!cell.pencilMarks.includes(digit)) {
+        const newMarks = [...cell.pencilMarks, digit];
+        cell.pencilMarks = newMarks.sort();
+      }
+      cell.value = 0;
+    });
+  }
+
   return {
     selectedCells,
     setSelected,
     appendSelected,
     selectAll,
     arrowKeyMove,
+    setValueOnSelected,
+    clearValuesOnSelected,
+    setDigitOnSelected,
+    setPencilMarkOnSelected,
   };
 });

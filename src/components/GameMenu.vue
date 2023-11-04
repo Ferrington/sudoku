@@ -49,7 +49,8 @@ function checkSolution() {
 }
 
 :is(.new-game-button, .difficulty-select, .check-solution) {
-  padding: 2px;
+  padding: 5px;
+  font-size: 1rem;
 }
 
 .wrong {
@@ -58,6 +59,6 @@ function checkSolution() {
 
 .message {
   margin-top: 5px;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
 }
 </style>

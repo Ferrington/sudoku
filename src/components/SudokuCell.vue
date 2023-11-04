@@ -25,7 +25,7 @@ const cell = computed((): Cell => {
 });
 const centerMarksSize = computed(() => {
   const charCount = cell.value.pencilMarks.length;
-  const fontSize = 0.7 - 0.1 * Math.max(charCount - 5, 0);
+  const fontSize = 1.2 - 0.15 * Math.max(charCount - 5, 0);
   return fontSize + 'rem';
 });
 
@@ -67,8 +67,8 @@ function getCoords(): Coords {
   --highlight-color: rgb(100, 141, 255);
 
   background: white;
-  width: 40px;
-  height: 40px;
+  width: 70px;
+  height: 70px;
   font-size: 0.7rem;
   cursor: pointer;
   font-family: Arial, Helvetica, sans-serif;
@@ -77,11 +77,11 @@ function getCoords(): Coords {
 .outline {
   width: 100%;
   height: 100%;
-  border: 3px solid transparent;
+  border: 4px solid transparent;
 }
 
 .selected {
-  border: 3px solid var(--highlight-color);
+  border: 4px solid var(--highlight-color);
 }
 
 :is(.given, .digit) {
@@ -90,7 +90,7 @@ function getCoords(): Coords {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
 }
 
@@ -99,6 +99,7 @@ function getCoords(): Coords {
 }
 
 .side-marks-wrapper {
+  height: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -106,7 +107,7 @@ function getCoords(): Coords {
 
 .side-marks {
   color: var(--highlight-color);
-  font-size: 0.55rem;
+  font-size: 0.9rem;
   display: flex;
 }
 

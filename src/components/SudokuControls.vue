@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { BOARD_SIZE } from '@/assets/constants';
 import { useMenuStore } from '@/stores/menu';
+import { useSelectedStore } from '@/stores/selected';
 import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 const sudokuStore = useSudokuStore();
-const { setValueOnSelected } = sudokuStore;
 const { grid } = storeToRefs(sudokuStore);
+
+const { setValueOnSelected } = useSelectedStore();
 
 const menuStore = useMenuStore();
 const { setActiveMenu } = menuStore;
@@ -107,20 +109,31 @@ const digitCounts = computed(() => {
 
 .numpad {
   display: grid;
-  grid-template-columns: repeat(3, 30px);
-  grid-template-rows: repeat(4, 30px);
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(4, 60px);
   gap: 2px;
 }
 
 .menu-select {
   width: 60px;
   display: grid;
-  grid-template-rows: repeat(3, 30px);
+  grid-template-rows: repeat(3, 60px);
   gap: 2px;
 }
 
+.menu-select--button {
+  font-family: inherit;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px 20px;
+}
+
+.menu-select--button.selected {
+  border: 2px solid rgb(100, 141, 255);
+}
+
 .digits--button {
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
   font-family: inherit;
@@ -131,9 +144,9 @@ const digitCounts = computed(() => {
 }
 
 .side-button {
-  font-size: 0.7rem;
+  font-size: 1.1rem;
   display: flex;
-  padding: 2px;
+  padding: 5px;
 }
 
 .side-button:nth-child(3n + 2) {
@@ -158,16 +171,6 @@ const digitCounts = computed(() => {
 }
 
 .center-button {
-  font-size: 0.7rem;
-}
-
-.menu-select--button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.menu-select--button.selected {
-  border: 2px solid rgb(100, 141, 255);
+  font-size: 1.1rem;
 }
 </style>
-@/stores/sudoku
