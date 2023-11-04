@@ -78,6 +78,7 @@ const digitCounts = computed(() => {
       <button
         type="button"
         :class="{ 'menu-select--button': true, selected: activeMenu === 'digit' }"
+        title="Hotkey: z"
         @click="setActiveMenu('digit')"
       >
         Digit
@@ -85,6 +86,7 @@ const digitCounts = computed(() => {
       <button
         type="button"
         :class="{ 'menu-select--button': true, selected: activeMenu === 'side' }"
+        title="Hotkey: x"
         @click="setActiveMenu('side')"
       >
         Side
@@ -92,6 +94,7 @@ const digitCounts = computed(() => {
       <button
         type="button"
         :class="{ 'menu-select--button': true, selected: activeMenu === 'center' }"
+        title="Hotkey: c"
         @click="setActiveMenu('center')"
       >
         Center
