@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useSudokuStore } from '@/stores/sudoku';
+import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { reactive, ref } from 'vue';
 
-const { newGame, isCorrect, isComplete } = useSudokuStore();
+const { newGame, isCorrect, isComplete } = useSudokuGridStore();
 const difficulty = ref<Difficulty>('easy');
 const solution = reactive({
   message: '',
@@ -62,3 +62,4 @@ function checkSolution() {
   font-size: 1.2rem;
 }
 </style>
+@/stores/sudokuGrid

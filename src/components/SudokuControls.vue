@@ -2,21 +2,21 @@
 import { BOARD_SIZE } from '@/assets/constants';
 import { useMenuStore } from '@/stores/menu';
 import { useSelectedStore } from '@/stores/selected';
-import { useSudokuStore } from '@/stores/sudoku';
+import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
-const sudokuStore = useSudokuStore();
-const { grid } = storeToRefs(sudokuStore);
+const sudokuStore = useSudokuGridStore();
+const { sudokuGrid } = storeToRefs(sudokuStore);
 
-const { setValueOnSelected } = useSelectedStore();
+const { setValueOnSelected, eraseDisqualifiedMarks } = useSelectedStore();
 
 const menuStore = useMenuStore();
 const { setActiveMenu } = menuStore;
 const { activeMenu } = storeToRefs(menuStore);
 
 const digitCounts = computed(() => {
-  return grid.value.flat().reduce(
+  return sudokuGrid.value.flat().reduce(
     (counts, cell) => {
       if (cell.value in counts) counts[cell.value]++;
       else counts[cell.value] = 1;
@@ -101,6 +101,9 @@ const digitCounts = computed(() => {
       </button>
     </div>
   </div>
+  <button class="erase-marks" title="Hotkey: ." @click="eraseDisqualifiedMarks">
+    Remove Disqualified Marks
+  </button>
 </template>
 
 <style scoped>
@@ -175,5 +178,10 @@ const digitCounts = computed(() => {
 
 .center-button {
   font-size: 1.1rem;
+}
+
+.erase-marks {
+  padding: 5px 10px;
+  font-size: 1.2rem;
 }
 </style>

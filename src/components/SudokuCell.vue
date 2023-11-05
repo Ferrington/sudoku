@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useSelectedStore } from '@/stores/selected';
-import { useSudokuStore } from '@/stores/sudoku';
+import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import type { Cell, Coords } from '@/types';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
-const sudokuStore = useSudokuStore();
-const { grid } = storeToRefs(sudokuStore);
+const sudokuStore = useSudokuGridStore();
+const { sudokuGrid } = storeToRefs(sudokuStore);
 const selectedStore = useSelectedStore();
 const { setSelected, appendSelected, selectAll } = selectedStore;
 const { selectedCells } = storeToRefs(selectedStore);
@@ -21,7 +21,7 @@ const isSelected = computed((): Boolean => {
 });
 const cell = computed((): Cell => {
   const [y, x] = coords.value;
-  return grid.value[y][x];
+  return sudokuGrid.value[y][x];
 });
 const centerMarksSize = computed(() => {
   const charCount = cell.value.pencilMarks.length;
@@ -141,3 +141,4 @@ function getCoords(): Coords {
   color: var(--highlight-color);
 }
 </style>
+@/stores/sudokuGrid

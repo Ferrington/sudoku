@@ -5,13 +5,14 @@ import SudokuGrid from './components/SudokuGrid.vue';
 import { useMenuStore } from './stores/menu';
 import { useSelectedStore } from './stores/selected';
 
-const { arrowKeyMove, setValueOnSelected } = useSelectedStore();
+const { arrowKeyMove, setValueOnSelected, eraseDisqualifiedMarks } = useSelectedStore();
 const { setActiveMenu } = useMenuStore();
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'z') setActiveMenu('digit');
   else if (e.key === 'x') setActiveMenu('side');
   else if (e.key === 'c') setActiveMenu('center');
+  else if (e.key === '.') eraseDisqualifiedMarks();
   else if (['Delete', 'Backspace'].includes(e.key)) {
     setValueOnSelected(0);
   } else if (!isNaN(Number(e.key))) {
