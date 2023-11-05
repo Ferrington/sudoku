@@ -22,6 +22,10 @@ export const useSelectedStore = defineStore('selected', () => {
     selectedCells.value.push([y, x]);
   }
 
+  function clearSelected() {
+    selectedCells.value = [];
+  }
+
   function selectAll([y, x]: Coords) {
     const cell = sudokuGrid.value[y][x];
     if (cell.value === 0) return;
@@ -141,6 +145,7 @@ export const useSelectedStore = defineStore('selected', () => {
     selectedCells,
     setSelected,
     appendSelected,
+    clearSelected,
     selectAll,
     arrowKeyMove,
     setValueOnSelected,

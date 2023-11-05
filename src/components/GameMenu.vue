@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useSelectedStore } from '@/stores/selected';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { reactive, ref } from 'vue';
 
 const { newGame, isCorrect, isComplete } = useSudokuGridStore();
+const { clearSelected } = useSelectedStore();
 const difficulty = ref<Difficulty>('easy');
 const solution = reactive({
   message: '',
@@ -24,6 +26,11 @@ function checkSolution() {
     solution.bad = true;
   }
 }
+
+function startNewGame() {
+  newGame(difficulty.value);
+  clearSelected();
+}
 </script>
 
 <template>
@@ -34,7 +41,7 @@ function checkSolution() {
       <option value="hard">Hard</option>
       <option value="expert">Expert</option>
     </select>
-    <button type="button" class="new-game-button" @click="newGame(difficulty)">New Game</button>
+    <button type="button" class="new-game-button" @click="startNewGame">New Game</button>
   </div>
   <div>
     <button type="button" class="check-solution" @click="checkSolution">Check Solution</button>
@@ -62,4 +69,3 @@ function checkSolution() {
   font-size: 1.2rem;
 }
 </style>
-@/stores/sudokuGrid

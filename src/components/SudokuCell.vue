@@ -141,4 +141,3 @@ function getCoords(): Coords {
   color: var(--highlight-color);
 }
 </style>
-@/stores/sudokuGrid
