@@ -133,7 +133,7 @@ export const useSelectedStore = defineStore('selected', () => {
   }
 
   function eraseDisqualifiedMarks() {
-    performCheck((cells: Cell[]) => {
+    performCheck(true, (cells: Cell[]) => {
       const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
       cells.forEach(
         (cell) => (cell.pencilMarks = cell.pencilMarks.filter((mark) => !values.includes(mark)))

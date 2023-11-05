@@ -14,3 +14,5 @@ export type Menu = 'digit' | PencilMark;
 export type Coords = [number, number];
 
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
+
+export type Region = 'row' | 'col' | 'box';

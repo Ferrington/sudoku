@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 const sudokuStore = useSudokuGridStore();
+const { performCheckFromCell } = sudokuStore;
 const { sudokuGrid } = storeToRefs(sudokuStore);
 const selectedStore = useSelectedStore();
 const { setSelected, appendSelected, selectAll } = selectedStore;
@@ -23,6 +24,12 @@ const cell = computed((): Cell => {
   const [y, x] = coords.value;
   return sudokuGrid.value[y][x];
 });
+const isConflicting = computed((): Boolean => {
+  return performCheckFromCell(coords.value, false, (cells: Cell[]) => {
+    const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
+    return values.indexOf(cell.value.value) === values.lastIndexOf(cell.value.value);
+  });
+});
 const centerMarksSize = computed(() => {
   const charCount = cell.value.pencilMarks.length;
   const fontSize = 1.2 - 0.15 * Math.max(charCount - 5, 0);
@@ -39,7 +46,7 @@ function getCoords(): Coords {
 
 <template>
   <div
-    class="cell"
+    :class="{ cell: true, conflicting: isConflicting && !cell.given }"
     tabindex="0"
     @mousedown.exact="setSelected(coords)"
     @mousedown.shift="appendSelected(coords)"
@@ -72,6 +79,10 @@ function getCoords(): Coords {
   font-size: 0.7rem;
   cursor: pointer;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.conflicting :is(.given, .digit) {
+  color: red;
 }
 
 .outline {

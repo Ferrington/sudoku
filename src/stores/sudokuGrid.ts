@@ -1,5 +1,5 @@
 import { BOARD_SIZE, BOX_SIZE } from '@/assets/constants';
-import { type Cell, type Difficulty, type SudokuGrid } from '@/types';
+import { type Cell, type Coords, type Difficulty, type Region, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
 import { defineStore } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
@@ -17,32 +17,46 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     return generateBoardFromString(sudoku.puzzle);
   }
 
-  function performCheck(check: Function) {
-    const REGION_MAPPING = {
-      row: (a: number, b: number) => sudokuGrid.value[a][b],
-      col: (a: number, b: number) => sudokuGrid.value[b][a],
-      box: (a: number, b: number) => {
-        const y = Math.floor(b / BOX_SIZE) + BOX_SIZE * Math.floor(a / BOX_SIZE);
-        const x = (b % BOX_SIZE) + BOX_SIZE * (a % BOX_SIZE);
-        return sudokuGrid.value[y][x];
-      },
-    };
-
-    let result = true;
+  function performCheck(checkAll: boolean, check: Function) {
+    let result = checkAll;
     for (let i = 0; i < BOARD_SIZE; i++) {
-      for (const mapFunction of Object.values(REGION_MAPPING)) {
-        const regionCells = [];
-        for (let j = 0; j < BOARD_SIZE; j++) {
-          regionCells.push(mapFunction(i, j));
-        }
-        if (!check(regionCells)) result = false;
-      }
+      const y = i;
+      const x = (i % BOX_SIZE) * BOX_SIZE + Math.floor(i / 3);
+      if (!performCheckFromCell([y, x], checkAll, check)) result = !checkAll;
     }
     return result;
   }
 
+  function performCheckFromCell(coords: Coords, checkAll: boolean, check: Function) {
+    let result = checkAll;
+    const regions: Region[] = ['row', 'col', 'box'];
+    for (const region of regions) {
+      const regionCells = [];
+      for (let i = 0; i < BOARD_SIZE; i++) {
+        const [y, x] = getRelativeCoords(region, coords, i);
+        regionCells.push(sudokuGrid.value[y][x]);
+      }
+      if (!check(regionCells)) result = !checkAll;
+    }
+    return result;
+  }
+
+  function getRelativeCoords(region: Region, [y, x]: Coords, i: number): Coords {
+    switch (region) {
+      case 'row':
+        return [y, i];
+      case 'col':
+        return [i, x];
+      case 'box': {
+        const newY = BOX_SIZE * Math.floor(x / BOX_SIZE) + Math.floor(i / BOX_SIZE);
+        const newX = BOX_SIZE * Math.floor(y / BOX_SIZE) + (i % BOX_SIZE);
+        return [newY, newX];
+      }
+    }
+  }
+
   function isCorrect() {
-    return performCheck((cells: Cell[]) => {
+    return performCheck(true, (cells: Cell[]) => {
       const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
       return values.length === new Set(values).size;
     });
@@ -58,5 +72,6 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     isCorrect,
     isComplete,
     performCheck,
+    performCheckFromCell,
   };
 });
