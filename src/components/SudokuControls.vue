@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { BOARD_SIZE } from '@/assets/constants';
 import { useMenuStore } from '@/stores/menu';
-import { useSelectedStore } from '@/stores/selected';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 const sudokuStore = useSudokuGridStore();
+const { setValueOnSelected, eraseDisqualifiedMarks } = sudokuStore;
 const { sudokuGrid } = storeToRefs(sudokuStore);
-
-const { setValueOnSelected, eraseDisqualifiedMarks } = useSelectedStore();
 
 const menuStore = useMenuStore();
 const { setActiveMenu } = menuStore;

@@ -6,10 +6,10 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 const sudokuStore = useSudokuGridStore();
-const { performCheckFromCell } = sudokuStore;
+const { performCheckFromCell, selectAllWithValue } = sudokuStore;
 const { sudokuGrid } = storeToRefs(sudokuStore);
 const selectedStore = useSelectedStore();
-const { setSelected, appendSelected, selectAll } = selectedStore;
+const { setSelected, appendSelected } = selectedStore;
 const { selectedCells } = storeToRefs(selectedStore);
 
 const props = defineProps(['boxNumber', 'cellNumber']);
@@ -51,7 +51,7 @@ function getCoords(): Coords {
     @mousedown.exact="setSelected(coords)"
     @mousedown.shift="appendSelected(coords)"
     @mousedown.ctrl="appendSelected(coords)"
-    @dblclick="selectAll(coords)"
+    @dblclick="selectAllWithValue(cell.value)"
   >
     <div :class="{ outline: true, selected: isSelected }">
       <div v-if="cell.value > 0" :class="cell.given ? 'given' : 'digit'">{{ cell.value }}</div>

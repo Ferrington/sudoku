@@ -1,43 +1,21 @@
 import { BOARD_SIZE } from '@/assets/constants';
-import type { Cell, Coords, PencilMark } from '@/types';
-import { allContainDigit } from '@/utils/utils';
-import { defineStore, storeToRefs } from 'pinia';
+import type { Coords } from '@/types';
+import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useMenuStore } from './menu';
-import { useSudokuGridStore } from './sudokuGrid';
 
 export const useSelectedStore = defineStore('selected', () => {
   const selectedCells = ref<Coords[]>([]);
-  const sudokuGridStore = useSudokuGridStore();
-  const { getCell, performCheck } = sudokuGridStore;
-  const menuStore = useMenuStore();
-  const { activeMenu } = storeToRefs(menuStore);
 
-  function setSelected([y, x]: Coords) {
-    selectedCells.value = [[y, x]];
+  function setSelected(...coords: Coords[]) {
+    selectedCells.value = coords;
   }
 
-  function appendSelected([y, x]: Coords) {
-    selectedCells.value.push([y, x]);
+  function appendSelected(coords: Coords) {
+    selectedCells.value.push(coords);
   }
 
   function clearSelected() {
     selectedCells.value = [];
-  }
-
-  function selectAll(coords: Coords) {
-    const cell = getCell(coords);
-    if (cell.value === 0) return;
-
-    selectedCells.value = [];
-    for (let y = 0; y < BOARD_SIZE; y++) {
-      for (let x = 0; x < BOARD_SIZE; x++) {
-        const _cell = getCell([y, x]);
-        if (cell.value === _cell.value) {
-          selectedCells.value.push([y, x]);
-        }
-      }
-    }
   }
 
   function arrowKeyMove(direction: string, heldShift: boolean) {
@@ -67,90 +45,11 @@ export const useSelectedStore = defineStore('selected', () => {
     }
   }
 
-  function setValueOnSelected(digit: number) {
-    if (digit === 0) {
-      clearValuesOnSelected();
-    }
-
-    if (activeMenu.value === 'digit') {
-      setDigitOnSelected(digit);
-    } else {
-      setPencilMarkOnSelected(digit, activeMenu.value);
-    }
-  }
-
-  function clearValuesOnSelected() {
-    selectedCells.value.forEach((coords) => {
-      const cell = getCell(coords);
-      if (cell.given) return;
-      cell.value = 0;
-      cell.pencilMarks = [];
-    });
-  }
-
-  function setDigitOnSelected(digit: number) {
-    const allSelectedEqual = allContainDigit(
-      selectedCells.value.map((coords) => getCell(coords).value),
-      digit
-    );
-
-    selectedCells.value.forEach((coords) => {
-      const cell = getCell(coords);
-      if (cell.given) return;
-      cell.value = cell.value === digit && allSelectedEqual ? 0 : digit;
-      cell.pencilMarks = [];
-    });
-  }
-
-  function setPencilMarkOnSelected(digit: number, type: PencilMark) {
-    const allCellsContainDigit = allContainDigit(
-      selectedCells.value.map((coords) => getCell(coords).pencilMarks),
-      digit
-    );
-
-    selectedCells.value.forEach((coords) => {
-      const cell = getCell(coords);
-      if (cell.given) return;
-      if (cell.value > 0) return;
-      if (digit === 0) {
-        cell.pencilMarks = [];
-        return;
-      }
-      if (cell.pencilMarkType !== type) {
-        cell.pencilMarks = [];
-        cell.pencilMarkType = type;
-      }
-
-      if (cell.pencilMarks.includes(digit) && allCellsContainDigit) {
-        cell.pencilMarks = cell.pencilMarks.filter((n) => n !== digit);
-      } else if (!cell.pencilMarks.includes(digit)) {
-        const newMarks = [...cell.pencilMarks, digit];
-        cell.pencilMarks = newMarks.sort();
-      }
-      cell.value = 0;
-    });
-  }
-
-  function eraseDisqualifiedMarks() {
-    performCheck(true, (cells: Cell[]) => {
-      const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
-      cells.forEach(
-        (cell) => (cell.pencilMarks = cell.pencilMarks.filter((mark) => !values.includes(mark)))
-      );
-    });
-  }
-
   return {
     selectedCells,
     setSelected,
     appendSelected,
     clearSelected,
-    selectAll,
     arrowKeyMove,
-    setValueOnSelected,
-    clearValuesOnSelected,
-    setDigitOnSelected,
-    setPencilMarkOnSelected,
-    eraseDisqualifiedMarks,
   };
 });

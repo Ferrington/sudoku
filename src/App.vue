@@ -4,8 +4,10 @@ import SudokuControls from './components/SudokuControls.vue';
 import SudokuGrid from './components/SudokuGrid.vue';
 import { useMenuStore } from './stores/menu';
 import { useSelectedStore } from './stores/selected';
+import { useSudokuGridStore } from './stores/sudokuGrid';
 
-const { arrowKeyMove, setValueOnSelected, eraseDisqualifiedMarks } = useSelectedStore();
+const { setValueOnSelected, eraseDisqualifiedMarks } = useSudokuGridStore();
+const { arrowKeyMove } = useSelectedStore();
 const { setActiveMenu } = useMenuStore();
 
 window.addEventListener('keydown', (e) => {
