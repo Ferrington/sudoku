@@ -9,8 +9,7 @@ import { useSudokuGridStore } from './sudokuGrid';
 export const useSelectedStore = defineStore('selected', () => {
   const selectedCells = ref<Coords[]>([]);
   const sudokuGridStore = useSudokuGridStore();
-  const { performCheck } = sudokuGridStore;
-  const { sudokuGrid } = storeToRefs(sudokuGridStore);
+  const { getCell, performCheck } = sudokuGridStore;
   const menuStore = useMenuStore();
   const { activeMenu } = storeToRefs(menuStore);
 
@@ -26,14 +25,14 @@ export const useSelectedStore = defineStore('selected', () => {
     selectedCells.value = [];
   }
 
-  function selectAll([y, x]: Coords) {
-    const cell = sudokuGrid.value[y][x];
+  function selectAll(coords: Coords) {
+    const cell = getCell(coords);
     if (cell.value === 0) return;
 
     selectedCells.value = [];
     for (let y = 0; y < BOARD_SIZE; y++) {
       for (let x = 0; x < BOARD_SIZE; x++) {
-        const _cell = sudokuGrid.value[y][x];
+        const _cell = getCell([y, x]);
         if (cell.value === _cell.value) {
           selectedCells.value.push([y, x]);
         }
@@ -81,8 +80,8 @@ export const useSelectedStore = defineStore('selected', () => {
   }
 
   function clearValuesOnSelected() {
-    selectedCells.value.forEach(([y, x]) => {
-      const cell = sudokuGrid.value[y][x];
+    selectedCells.value.forEach((coords) => {
+      const cell = getCell(coords);
       if (cell.given) return;
       cell.value = 0;
       cell.pencilMarks = [];
@@ -91,12 +90,12 @@ export const useSelectedStore = defineStore('selected', () => {
 
   function setDigitOnSelected(digit: number) {
     const allSelectedEqual = allContainDigit(
-      selectedCells.value.map(([y, x]) => sudokuGrid.value[y][x].value),
+      selectedCells.value.map((coords) => getCell(coords).value),
       digit
     );
 
-    selectedCells.value.forEach(([y, x]) => {
-      const cell = sudokuGrid.value[y][x];
+    selectedCells.value.forEach((coords) => {
+      const cell = getCell(coords);
       if (cell.given) return;
       cell.value = cell.value === digit && allSelectedEqual ? 0 : digit;
       cell.pencilMarks = [];
@@ -105,12 +104,12 @@ export const useSelectedStore = defineStore('selected', () => {
 
   function setPencilMarkOnSelected(digit: number, type: PencilMark) {
     const allCellsContainDigit = allContainDigit(
-      selectedCells.value.map(([y, x]) => sudokuGrid.value[y][x].pencilMarks),
+      selectedCells.value.map((coords) => getCell(coords).pencilMarks),
       digit
     );
 
-    selectedCells.value.forEach(([y, x]) => {
-      const cell = sudokuGrid.value[y][x];
+    selectedCells.value.forEach((coords) => {
+      const cell = getCell(coords);
       if (cell.given) return;
       if (cell.value > 0) return;
       if (digit === 0) {

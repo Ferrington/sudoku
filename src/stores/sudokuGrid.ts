@@ -17,11 +17,33 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     return generateBoardFromString(sudoku.puzzle);
   }
 
+  function getCell([y, x]: Coords) {
+    return sudokuGrid.value[y][x];
+  }
+
+  function setCellValue([y, x]: Coords, value: number) {
+    sudokuGrid.value[y][x].value = value;
+  }
+
   function performCheck(checkAll: boolean, check: Function) {
+    /*
+      loop through unique regions
+
+      0 . . . . . . . .
+      . . . 1 . . . . .
+      . . . . . . 2 . .
+      . 3 . . . . . . .
+      . . . . 4 . . . .
+      . . . . . . . 5 .
+      . . 6 . . . . . . 
+      . . . . . 7 . . .
+      . . . . . . . . 8
+
+    */
     let result = checkAll;
     for (let i = 0; i < BOARD_SIZE; i++) {
       const y = i;
-      const x = (i % BOX_SIZE) * BOX_SIZE + Math.floor(i / 3);
+      const x = (i % BOX_SIZE) * BOX_SIZE + Math.floor(i / BOX_SIZE);
       if (!performCheckFromCell([y, x], checkAll, check)) result = !checkAll;
     }
     return result;
@@ -68,6 +90,8 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
 
   return {
     sudokuGrid,
+    getCell,
+    setCellValue,
     newGame,
     isCorrect,
     isComplete,
