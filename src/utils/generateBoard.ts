@@ -7,12 +7,12 @@ export function generateBoardFromString(boardString: string): SudokuGrid {
     throw new Error('Invalid board string.');
   }
 
-  const grid: SudokuGrid = [...Array(BOARD_SIZE)].map((_) => Array(BOARD_SIZE));
+  const grid: SudokuGrid = {};
   [...boardString].forEach((n, i) => {
     const y = Math.floor(i / BOARD_SIZE);
     const x = i % BOARD_SIZE;
     const cellValue = Number(n);
-    grid[y][x] = {
+    grid[`${y},${x}`] = {
       value: isNaN(cellValue) ? 0 : cellValue,
       given: !isNaN(cellValue),
       pencilMarks: [],

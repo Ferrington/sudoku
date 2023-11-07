@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import { BOARD_SIZE } from '@/assets/constants';
 import { useMenuStore } from '@/stores/menu';
-import { useSelectedStore } from '@/stores/selected';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 const sudokuStore = useSudokuGridStore();
+const { setValueOnSelected, eraseDisqualifiedMarks } = sudokuStore;
 const { sudokuGrid } = storeToRefs(sudokuStore);
-
-const { setValueOnSelected, eraseDisqualifiedMarks } = useSelectedStore();
 
 const menuStore = useMenuStore();
 const { setActiveMenu } = menuStore;
 const { activeMenu } = storeToRefs(menuStore);
 
 const digitCounts = computed(() => {
-  return sudokuGrid.value.flat().reduce(
+  return Object.values(sudokuGrid.value).reduce(
     (counts, cell) => {
       if (cell.value in counts) counts[cell.value]++;
       else counts[cell.value] = 1;
