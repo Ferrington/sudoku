@@ -11,6 +11,7 @@ export const useSelectedStore = defineStore('selected', () => {
   }
 
   function appendSelected(coords: string) {
+    if (selectedCells.value.includes(coords)) return;
     selectedCells.value.push(coords);
   }
 
