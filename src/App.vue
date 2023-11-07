@@ -6,12 +6,13 @@ import { useMenuStore } from './stores/menu';
 import { useSelectedStore } from './stores/selected';
 import { useSudokuGridStore } from './stores/sudokuGrid';
 
-const { setValueOnSelected, eraseDisqualifiedMarks, undo } = useSudokuGridStore();
+const { setValueOnSelected, eraseDisqualifiedMarks, undo, redo } = useSudokuGridStore();
 const { arrowKeyMove } = useSelectedStore();
 const { setActiveMenu } = useMenuStore();
 
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'z') {
+  if (e.key.toLowerCase() === 'z') {
+    if (e.getModifierState('Control') && e.getModifierState('Shift')) redo();
     if (e.getModifierState('Control')) undo();
     else setActiveMenu('digit');
   } else if (e.key === 'x') setActiveMenu('side');
