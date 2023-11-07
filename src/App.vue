@@ -6,13 +6,15 @@ import { useMenuStore } from './stores/menu';
 import { useSelectedStore } from './stores/selected';
 import { useSudokuGridStore } from './stores/sudokuGrid';
 
-const { setValueOnSelected, eraseDisqualifiedMarks } = useSudokuGridStore();
+const { setValueOnSelected, eraseDisqualifiedMarks, undo } = useSudokuGridStore();
 const { arrowKeyMove } = useSelectedStore();
 const { setActiveMenu } = useMenuStore();
 
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'z') setActiveMenu('digit');
-  else if (e.key === 'x') setActiveMenu('side');
+  if (e.key === 'z') {
+    if (e.getModifierState('Control')) undo();
+    else setActiveMenu('digit');
+  } else if (e.key === 'x') setActiveMenu('side');
   else if (e.key === 'c') setActiveMenu('center');
   else if (e.key === '.') eraseDisqualifiedMarks();
   else if (['Delete', 'Backspace'].includes(e.key)) {
