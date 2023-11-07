@@ -4,17 +4,21 @@ import { generateBoardFromString } from '@/utils/generateBoard';
 import { allContainDigit, coordsToString } from '@/utils/utils';
 import { defineStore, storeToRefs } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useHistoryStore } from './history';
 import { useMenuStore } from './menu';
 import { useSelectedStore } from './selected';
 
 export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   const sudokuGrid = ref<SudokuGrid>(generateSudoku('easy'));
+  const preventUpdate = ref(false);
   const selectedStore = useSelectedStore();
   const { setSelected } = selectedStore;
   const { selectedCells } = storeToRefs(selectedStore);
   const menuStore = useMenuStore();
   const { activeMenu } = storeToRefs(menuStore);
+  const historyStore = useHistoryStore();
+  const { addSnapshot, prevSnapshot, nextSnapshot } = historyStore;
 
   function newGame(difficulty: Difficulty) {
     sudokuGrid.value = generateSudoku(difficulty);
@@ -154,6 +158,32 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     setSelected(...cellCoords);
   }
 
+  function undo() {
+    const prev = prevSnapshot();
+    if (prev == null) return;
+    preventUpdate.value = true;
+    sudokuGrid.value = prev;
+  }
+
+  function redo() {
+    const next = nextSnapshot();
+    if (next == null) return;
+    preventUpdate.value = true;
+    sudokuGrid.value = next;
+  }
+
+  watch(
+    sudokuGrid,
+    (grid) => {
+      if (preventUpdate.value) {
+        preventUpdate.value = false;
+        return;
+      }
+      addSnapshot(grid);
+    },
+    { immediate: true, deep: true }
+  );
+
   return {
     sudokuGrid,
     newGame,
@@ -164,5 +194,7 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     setValueOnSelected,
     eraseDisqualifiedMarks,
     selectAllWithValue,
+    undo,
+    redo,
   };
 });

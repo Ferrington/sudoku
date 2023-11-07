@@ -44,7 +44,6 @@ function getCoordsString(): string {
 <template>
   <div
     :class="{ cell: true, conflicting: isConflicting && !cell.given }"
-    tabindex="0"
     @mousedown.exact="setSelected(coordsString)"
     @mousedown.shift="appendSelected(coordsString)"
     @mousedown.ctrl="appendSelected(coordsString)"
