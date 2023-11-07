@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { BOARD_SIZE } from '@/assets/constants';
+import { useHistoryStore } from '@/stores/history';
 import { useMenuStore } from '@/stores/menu';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 const sudokuStore = useSudokuGridStore();
-const { setValueOnSelected, eraseDisqualifiedMarks } = sudokuStore;
+const { setValueOnSelected, eraseDisqualifiedMarks, undo, redo } = sudokuStore;
 const { sudokuGrid } = storeToRefs(sudokuStore);
 
 const menuStore = useMenuStore();
 const { setActiveMenu } = menuStore;
 const { activeMenu } = storeToRefs(menuStore);
+
+const historyStore = useHistoryStore();
+const { cannotUndo, cannotRedo } = storeToRefs(historyStore);
 
 const digitCounts = computed(() => {
   return Object.values(sudokuGrid.value).reduce(
@@ -26,6 +30,26 @@ const digitCounts = computed(() => {
 </script>
 
 <template>
+  <div>
+    <button
+      type="button"
+      class="time-travel-button"
+      :disabled="cannotUndo"
+      title="Hotkey: Ctrl + z"
+      @click="undo"
+    >
+      Undo
+    </button>
+    <button
+      type="button"
+      class="time-travel-button"
+      :disabled="cannotRedo"
+      title="Hotkey: Ctrl + Shift + z"
+      @click="redo"
+    >
+      Redo
+    </button>
+  </div>
   <div class="wrapper">
     <div class="numpad" v-show="activeMenu === 'digit'">
       <button
@@ -105,6 +129,11 @@ const digitCounts = computed(() => {
 </template>
 
 <style scoped>
+.time-travel-button {
+  padding: 5px 10px;
+  font-size: 1.2rem;
+}
+
 .wrapper {
   display: flex;
   gap: 10px;

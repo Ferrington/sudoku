@@ -1,28 +1,31 @@
 import type { SudokuGrid } from '@/types';
 import { defineStore } from 'pinia';
-import { ref, toRaw } from 'vue';
+import { computed, ref, toRaw } from 'vue';
 
 export const useHistoryStore = defineStore('history', () => {
   const history = ref<SudokuGrid[]>([]);
   const index = ref(-1);
 
+  const cannotUndo = computed(() => index.value < 1);
+
+  const cannotRedo = computed(() => index.value + 1 >= history.value.length);
+
   function addSnapshot(grid: SudokuGrid) {
     const deepClone = structuredClone(toRaw(grid));
-    if (history.value.length - 1 > index.value) pruneTimeline();
+    if (index.value + 1 < history.value.length) pruneTimeline();
     history.value.push(deepClone);
     if (history.value.length > 10) history.value.shift();
     else index.value++;
   }
 
   function prevSnapshot() {
-    if (index.value < 1 || history.value.length === 1) return;
+    if (cannotUndo.value) return;
     return structuredClone(toRaw(history.value[--index.value]));
   }
 
   function nextSnapshot() {
-    if (index.value + 1 > history.value.length) return;
-    index.value += 2;
-    return structuredClone(toRaw(history.value[index.value]));
+    if (cannotRedo.value) return;
+    return structuredClone(toRaw(history.value[++index.value]));
   }
 
   function pruneTimeline() {
@@ -34,5 +37,7 @@ export const useHistoryStore = defineStore('history', () => {
     addSnapshot,
     prevSnapshot,
     nextSnapshot,
+    cannotUndo,
+    cannotRedo,
   };
 });
