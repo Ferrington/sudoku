@@ -179,6 +179,7 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
         preventUpdate.value = false;
         return;
       }
+      console.log('add');
       addSnapshot(grid);
     },
     { immediate: true, deep: true }
