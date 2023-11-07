@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useSelectedStore } from '@/stores/selected';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
-import type { Cell, Coords } from '@/types';
+import type { Cell } from '@/types';
+import { coordsToString } from '@/utils/utils';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
@@ -13,19 +14,15 @@ const { setSelected, appendSelected } = selectedStore;
 const { selectedCells } = storeToRefs(selectedStore);
 
 const props = defineProps(['boxNumber', 'cellNumber']);
-const coords = computed((): Coords => getCoords());
+const coordsString = computed((): string => getCoordsString());
 const isSelected = computed((): Boolean => {
-  return selectedCells.value.some(([_y, _x]) => {
-    const [y, x] = coords.value;
-    return y === _y && x === _x;
-  });
+  return selectedCells.value.some((cs) => cs === coordsString.value);
 });
 const cell = computed((): Cell => {
-  const [y, x] = coords.value;
-  return sudokuGrid.value[y][x];
+  return sudokuGrid.value[coordsString.value];
 });
 const isConflicting = computed((): Boolean => {
-  return performCheckFromCell(coords.value, false, (cells: Cell[]) => {
+  return performCheckFromCell(coordsString.value, false, (cells: Cell[]) => {
     const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
     return values.indexOf(cell.value.value) === values.lastIndexOf(cell.value.value);
   });
@@ -36,11 +33,11 @@ const centerMarksSize = computed(() => {
   return fontSize + 'rem';
 });
 
-function getCoords(): Coords {
+function getCoordsString(): string {
   const y = Math.floor(props.boxNumber / 3) * 3 + Math.floor(props.cellNumber / 3);
   const x = (props.boxNumber % 3) * 3 + (props.cellNumber % 3);
 
-  return [y, x];
+  return coordsToString(y, x);
 }
 </script>
 
@@ -48,9 +45,9 @@ function getCoords(): Coords {
   <div
     :class="{ cell: true, conflicting: isConflicting && !cell.given }"
     tabindex="0"
-    @mousedown.exact="setSelected(coords)"
-    @mousedown.shift="appendSelected(coords)"
-    @mousedown.ctrl="appendSelected(coords)"
+    @mousedown.exact="setSelected(coordsString)"
+    @mousedown.shift="appendSelected(coordsString)"
+    @mousedown.ctrl="appendSelected(coordsString)"
     @dblclick="selectAllWithValue(cell.value)"
   >
     <div :class="{ outline: true, selected: isSelected }">

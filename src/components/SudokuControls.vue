@@ -14,7 +14,7 @@ const { setActiveMenu } = menuStore;
 const { activeMenu } = storeToRefs(menuStore);
 
 const digitCounts = computed(() => {
-  return sudokuGrid.value.flat().reduce(
+  return Object.values(sudokuGrid.value).reduce(
     (counts, cell) => {
       if (cell.value in counts) counts[cell.value]++;
       else counts[cell.value] = 1;

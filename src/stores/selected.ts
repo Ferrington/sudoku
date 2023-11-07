@@ -1,16 +1,16 @@
 import { BOARD_SIZE } from '@/assets/constants';
-import type { Coords } from '@/types';
+import { coordsToString, stringToCoords } from '@/utils/utils';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useSelectedStore = defineStore('selected', () => {
-  const selectedCells = ref<Coords[]>([]);
+  const selectedCells = ref<string[]>([]);
 
-  function setSelected(...coords: Coords[]) {
+  function setSelected(...coords: string[]) {
     selectedCells.value = coords;
   }
 
-  function appendSelected(coords: Coords) {
+  function appendSelected(coords: string) {
     selectedCells.value.push(coords);
   }
 
@@ -21,7 +21,7 @@ export const useSelectedStore = defineStore('selected', () => {
   function arrowKeyMove(direction: string, heldShift: boolean) {
     if (selectedCells.value.length === 0) return;
 
-    const [prevY, prevX] = selectedCells.value.slice(-1)[0];
+    const [prevY, prevX] = stringToCoords(selectedCells.value.slice(-1)[0]);
     let newY = -1;
     let newX = -1;
     if (direction === 'ArrowLeft') {
@@ -39,9 +39,9 @@ export const useSelectedStore = defineStore('selected', () => {
     }
 
     if (heldShift) {
-      appendSelected([newY, newX]);
+      appendSelected(coordsToString(newY, newX));
     } else {
-      setSelected([newY, newX]);
+      setSelected(coordsToString(newY, newX));
     }
   }
 

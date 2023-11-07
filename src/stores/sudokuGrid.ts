@@ -1,14 +1,7 @@
-import { BOARD_SIZE, BOX_SIZE } from '@/assets/constants';
-import {
-  type Cell,
-  type Coords,
-  type Difficulty,
-  type PencilMark,
-  type Region,
-  type SudokuGrid,
-} from '@/types';
+import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/assets/constants';
+import { type Cell, type Difficulty, type PencilMark, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
-import { allContainDigit } from '@/utils/utils';
+import { allContainDigit, coordsToString } from '@/utils/utils';
 import { defineStore, storeToRefs } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
 import { ref } from 'vue';
@@ -22,10 +15,6 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   const { selectedCells } = storeToRefs(selectedStore);
   const menuStore = useMenuStore();
   const { activeMenu } = storeToRefs(menuStore);
-
-  function getCell([y, x]: Coords) {
-    return sudokuGrid.value[y][x];
-  }
 
   function newGame(difficulty: Difficulty) {
     sudokuGrid.value = generateSudoku(difficulty);
@@ -55,37 +44,20 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     for (let i = 0; i < BOARD_SIZE; i++) {
       const y = i;
       const x = (i % BOX_SIZE) * BOX_SIZE + Math.floor(i / BOX_SIZE);
-      if (!performCheckFromCell([y, x], checkAll, check)) result = !checkAll;
+      if (!performCheckFromCell(coordsToString(y, x), checkAll, check)) result = !checkAll;
     }
     return result;
   }
 
-  function performCheckFromCell(coords: Coords, checkAll: boolean, check: Function) {
+  function performCheckFromCell(coordsString: string, checkAll: boolean, check: Function) {
     let result = checkAll;
-    const regions: Region[] = ['row', 'col', 'box'];
-    for (const region of regions) {
-      const regionCells = [];
-      for (let i = 0; i < BOARD_SIZE; i++) {
-        const [y, x] = getRelativeCoords(region, coords, i);
-        regionCells.push(sudokuGrid.value[y][x]);
-      }
-      if (!check(regionCells)) result = !checkAll;
-    }
-    return result;
-  }
 
-  function getRelativeCoords(region: Region, [y, x]: Coords, i: number): Coords {
-    switch (region) {
-      case 'row':
-        return [y, i];
-      case 'col':
-        return [i, x];
-      case 'box': {
-        const newY = BOX_SIZE * Math.floor(x / BOX_SIZE) + Math.floor(i / BOX_SIZE);
-        const newX = BOX_SIZE * Math.floor(y / BOX_SIZE) + (i % BOX_SIZE);
-        return [newY, newX];
-      }
-    }
+    REGION_DICT[coordsString].forEach((region) => {
+      const cells = region.map((coords) => sudokuGrid.value[coords]);
+      if (!check(cells)) result = !checkAll;
+    });
+
+    return result;
   }
 
   function isCorrect() {
@@ -96,7 +68,7 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   }
 
   function isComplete() {
-    return !sudokuGrid.value.flat().some((cell) => cell.value === 0);
+    return !Object.values(sudokuGrid.value).some((cell) => cell.value === 0);
   }
 
   function setValueOnSelected(digit: number) {
@@ -112,8 +84,8 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   }
 
   function clearValuesOnSelected() {
-    selectedCells.value.forEach(([y, x]) => {
-      const cell = sudokuGrid.value[y][x];
+    selectedCells.value.forEach((coordString) => {
+      const cell = sudokuGrid.value[coordString];
       if (cell.given) return;
       cell.value = 0;
       cell.pencilMarks = [];
@@ -122,12 +94,12 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
 
   function setDigitOnSelected(digit: number) {
     const allSelectedEqual = allContainDigit(
-      selectedCells.value.map(([y, x]) => sudokuGrid.value[y][x].value),
+      selectedCells.value.map((coordString) => sudokuGrid.value[coordString].value),
       digit
     );
 
-    selectedCells.value.forEach(([y, x]) => {
-      const cell = sudokuGrid.value[y][x];
+    selectedCells.value.forEach((coordString) => {
+      const cell = sudokuGrid.value[coordString];
       if (cell.given) return;
       cell.value = cell.value === digit && allSelectedEqual ? 0 : digit;
       cell.pencilMarks = [];
@@ -136,12 +108,12 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
 
   function setPencilMarkOnSelected(digit: number, type: PencilMark) {
     const allCellsContainDigit = allContainDigit(
-      selectedCells.value.map(([y, x]) => sudokuGrid.value[y][x].pencilMarks),
+      selectedCells.value.map((coordString) => sudokuGrid.value[coordString].pencilMarks),
       digit
     );
 
-    selectedCells.value.forEach(([y, x]) => {
-      const cell = sudokuGrid.value[y][x];
+    selectedCells.value.forEach((coordString) => {
+      const cell = sudokuGrid.value[coordString];
       if (cell.given) return;
       if (cell.value > 0) return;
       if (digit === 0) {
@@ -175,21 +147,15 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   function selectAllWithValue(value: number) {
     if (value === 0) return;
 
-    const cells: Coords[] = [];
-    for (let y = 0; y < BOARD_SIZE; y++) {
-      for (let x = 0; x < BOARD_SIZE; x++) {
-        const cell = getCell([y, x]);
-        if (value === cell.value) {
-          cells.push([y, x]);
-        }
-      }
-    }
-    setSelected(...cells);
+    const cellCoords: string[] = Object.entries(sudokuGrid.value)
+      .filter(([, cell]) => cell.value === value)
+      .map(([coords]) => coords);
+
+    setSelected(...cellCoords);
   }
 
   return {
     sudokuGrid,
-    getCell,
     newGame,
     isCorrect,
     isComplete,

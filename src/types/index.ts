@@ -1,4 +1,7 @@
-export type SudokuGrid = Cell[][];
+// export type SudokuGrid = Cell[][];
+export type SudokuGrid = {
+  [key: string]: Cell;
+};
 
 export type Cell = {
   value: number;
@@ -16,3 +19,9 @@ export type Coords = [number, number];
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 export type Region = 'row' | 'col' | 'box';
+
+export type RegionDict = {
+  [key: string]: string[][];
+};
+
+export type PeerDict = RegionDict;
