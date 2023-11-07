@@ -18,7 +18,7 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   const menuStore = useMenuStore();
   const { activeMenu } = storeToRefs(menuStore);
   const historyStore = useHistoryStore();
-  const { addSnapshot, prevSnapshot } = historyStore;
+  const { addSnapshot, prevSnapshot, nextSnapshot } = historyStore;
 
   function newGame(difficulty: Difficulty) {
     sudokuGrid.value = generateSudoku(difficulty);
@@ -159,10 +159,17 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   }
 
   function undo() {
-    preventUpdate.value = true;
     const prev = prevSnapshot();
     if (prev == null) return;
+    preventUpdate.value = true;
     sudokuGrid.value = prev;
+  }
+
+  function redo() {
+    const next = nextSnapshot();
+    if (next == null) return;
+    preventUpdate.value = true;
+    sudokuGrid.value = next;
   }
 
   watch(
@@ -188,5 +195,6 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     eraseDisqualifiedMarks,
     selectAllWithValue,
     undo,
+    redo,
   };
 });
