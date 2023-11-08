@@ -1,10 +1,18 @@
 import type { RegionDict } from '@/types';
 
-export function generateRegionDict() {
+const boxChunks = ['012', '345', '678'];
+const rows = [...boxChunks.join('')];
+const cols = [...boxChunks.join('')];
+
+export function generateCells() {
   const boxChunks = ['012', '345', '678'];
   const rows = [...boxChunks.join('')];
   const cols = [...boxChunks.join('')];
-  const cells = crossProduct(rows, cols);
+  return crossProduct(rows, cols);
+}
+
+export function generateRegionDict() {
+  const cells = generateCells();
   const allRegions = [
     ...cols.map((c) => crossProduct(rows, [c])),
     ...rows.map((r) => crossProduct([r], cols)),
