@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BOARD_SIZE, BOX_SIZE } from '@/assets/constants';
+import { BOARD_SIZE, BOX_SIZE } from '@/constants';
 import SudokuCell from './SudokuCell.vue';
 </script>
 
@@ -32,3 +32,4 @@ import SudokuCell from './SudokuCell.vue';
   gap: 1px;
 }
 </style>
+@/constants/constants

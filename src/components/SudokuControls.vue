@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BOARD_SIZE } from '@/assets/constants';
+import { BOARD_SIZE } from '@/constants';
 import { useHistoryStore } from '@/stores/history';
 import { useMenuStore } from '@/stores/menu';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
@@ -212,3 +212,4 @@ const digitCounts = computed(() => {
   font-size: 1.2rem;
 }
 </style>
+@/constants/constants

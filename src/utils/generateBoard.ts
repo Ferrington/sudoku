@@ -1,4 +1,4 @@
-import { BOARD_SIZE } from '@/assets/constants';
+import { BOARD_SIZE } from '@/constants';
 import type { SudokuGrid } from '@/types';
 
 // '35--1---2----5--8171--94---4-72--5-65-146-2---6-9-5--------73-5--4-298---7513892-';

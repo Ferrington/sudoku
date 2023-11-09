@@ -1,4 +1,4 @@
-import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/assets/constants';
+import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/constants';
 import { type Cell, type Difficulty, type PencilMark, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
 import { solvePuzzle } from '@/utils/solvePuzzle';

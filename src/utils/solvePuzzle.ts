@@ -1,4 +1,4 @@
-import { BOARD_SIZE, CELLS, REGION_DICT } from '@/assets/constants';
+import { BOARD_SIZE, CELLS, REGION_DICT } from '@/constants';
 import type { SudokuGrid } from '@/types';
 
 export function solvePuzzle(grid: SudokuGrid): SudokuGrid {
