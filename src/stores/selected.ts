@@ -1,4 +1,4 @@
-import { BOARD_SIZE } from '@/assets/constants';
+import { BOARD_SIZE } from '@/constants';
 import { coordsToString, stringToCoords } from '@/utils/utils';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';

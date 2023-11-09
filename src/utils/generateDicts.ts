@@ -1,12 +1,18 @@
-import { BOARD_SIZE } from '@/assets/constants';
 import type { RegionDict } from '@/types';
 
-export function generateRegionDict() {
-  const values = [...Array(BOARD_SIZE).keys()].map((n) => String(n));
+const boxChunks = ['012', '345', '678'];
+const rows = [...boxChunks.join('')];
+const cols = [...boxChunks.join('')];
+
+export function generateCells() {
   const boxChunks = ['012', '345', '678'];
-  const rows = values;
-  const cols = values;
-  const cells = crossProduct(rows, cols);
+  const rows = [...boxChunks.join('')];
+  const cols = [...boxChunks.join('')];
+  return crossProduct(rows, cols);
+}
+
+export function generateRegionDict() {
+  const cells = generateCells();
   const allRegions = [
     ...cols.map((c) => crossProduct(rows, [c])),
     ...rows.map((r) => crossProduct([r], cols)),

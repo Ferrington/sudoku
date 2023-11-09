@@ -1,53 +1,28 @@
 <script setup lang="ts">
-import { useSelectedStore } from '@/stores/selected';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
-import type { Cell } from '@/types';
-import { coordsToString } from '@/utils/utils';
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
+import { useCell } from '@/composables/cell';
 
-const sudokuStore = useSudokuGridStore();
-const { performCheckFromCell, selectAllWithValue } = sudokuStore;
-const { sudokuGrid } = storeToRefs(sudokuStore);
-const selectedStore = useSelectedStore();
-const { setSelected, appendSelected } = selectedStore;
-const { selectedCells } = storeToRefs(selectedStore);
-
-const props = defineProps(['boxNumber', 'cellNumber']);
-const coordsString = computed((): string => getCoordsString());
-const isSelected = computed((): Boolean => {
-  return selectedCells.value.some((cs) => cs === coordsString.value);
+const props = defineProps({
+  boxNumber: { type: Number, required: true },
+  cellNumber: { type: Number, required: true },
 });
-const cell = computed((): Cell => {
-  return sudokuGrid.value[coordsString.value];
-});
-const isConflicting = computed((): Boolean => {
-  return performCheckFromCell(coordsString.value, false, (cells: Cell[]) => {
-    const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
-    return values.indexOf(cell.value.value) === values.lastIndexOf(cell.value.value);
-  });
-});
-const centerMarksSize = computed(() => {
-  const charCount = cell.value.pencilMarks.length;
-  const fontSize = 1.2 - 0.15 * Math.max(charCount - 5, 0);
-  return fontSize + 'rem';
-});
-
-function getCoordsString(): string {
-  const y = Math.floor(props.boxNumber / 3) * 3 + Math.floor(props.cellNumber / 3);
-  const x = (props.boxNumber % 3) * 3 + (props.cellNumber % 3);
-
-  return coordsToString(y, x);
-}
+const {
+  cell,
+  isConflicting,
+  isSelected,
+  centerMarksSize,
+  setSelected,
+  appendSelected,
+  selectAllWithValue,
+} = useCell(props.boxNumber, props.cellNumber);
 </script>
 
 <template>
   <div
-    :class="{ cell: true, conflicting: isConflicting && !cell.given }"
-    @mousedown.exact="setSelected(coordsString)"
-    @mousedown.shift="appendSelected(coordsString)"
-    @mousedown.ctrl="appendSelected(coordsString)"
-    @dblclick="selectAllWithValue(cell.value)"
+    :class="{ cell: true, conflicting: isConflicting }"
+    @mousedown.exact="setSelected"
+    @mousedown.shift="appendSelected"
+    @mousedown.ctrl="appendSelected"
+    @dblclick="selectAllWithValue"
   >
     <div :class="{ outline: true, selected: isSelected }">
       <div v-if="cell.value > 0" :class="cell.given ? 'given' : 'digit'">{{ cell.value }}</div>

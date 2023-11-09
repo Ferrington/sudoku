@@ -1,6 +1,7 @@
-import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/assets/constants';
+import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/constants';
 import { type Cell, type Difficulty, type PencilMark, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
+import { solvePuzzle } from '@/utils/solvePuzzle';
 import { allContainDigit, coordsToString } from '@/utils/utils';
 import { defineStore, storeToRefs } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
@@ -10,7 +11,8 @@ import { useMenuStore } from './menu';
 import { useSelectedStore } from './selected';
 
 export const useSudokuGridStore = defineStore('sudokuGrid', () => {
-  const sudokuGrid = ref<SudokuGrid>(generateSudoku('easy'));
+  const sudokuGrid = ref<SudokuGrid>({});
+  const solvedGrid = ref<SudokuGrid>({});
   const preventUpdate = ref(false);
   const selectedStore = useSelectedStore();
   const { setSelected } = selectedStore;
@@ -20,8 +22,16 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   const historyStore = useHistoryStore();
   const { addSnapshot, prevSnapshot, nextSnapshot } = historyStore;
 
+  newGame('easy');
+
   function newGame(difficulty: Difficulty) {
-    sudokuGrid.value = generateSudoku(difficulty);
+    const puzzle = generateSudoku(difficulty);
+    sudokuGrid.value = puzzle;
+    try {
+      solvedGrid.value = solvePuzzle(puzzle);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   function generateSudoku(difficulty: Difficulty) {
@@ -65,10 +75,11 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   }
 
   function isCorrect() {
-    return performCheck(true, (cells: Cell[]) => {
-      const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
-      return values.length === new Set(values).size;
-    });
+    return Object.entries(solvedGrid.value).reduce((bool, [coordsString, solvedCell]) => {
+      const cellValue = sudokuGrid.value[coordsString].value;
+      if (cellValue !== 0 && cellValue !== solvedCell.value) return false;
+      return bool;
+    }, true);
   }
 
   function isComplete() {
