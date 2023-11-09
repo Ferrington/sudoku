@@ -11,7 +11,7 @@ export function useCell(boxNumber: number, cellNumber: number) {
   const { sudokuGrid } = storeToRefs(sudokuStore);
 
   const coordsString = computed((): string => getCoordsString());
-  const { isSelected, setSelected, appendSelected } = useSelectCell(coordsString);
+  const { isSelected, setSelected, appendSelected } = useSelectCell(coordsString.value);
 
   const cell = computed((): Cell => {
     return sudokuGrid.value[coordsString.value];
