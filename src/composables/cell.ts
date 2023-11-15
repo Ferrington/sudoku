@@ -1,9 +1,9 @@
+import { useSelectCell } from '@/composables/selectCell';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import type { Cell } from '@/types';
 import { coordsToString } from '@/utils/utils';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
-import { useSelectCell } from './selectCell';
 
 export function useCell(boxNumber: number, cellNumber: number) {
   const sudokuStore = useSudokuGridStore();

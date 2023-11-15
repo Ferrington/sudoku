@@ -1,18 +1,19 @@
 import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/constants';
+import { useHistoryStore } from '@/stores/history';
+import { useMenuStore } from '@/stores/menu';
+import { useSelectedStore } from '@/stores/selected';
 import { type Cell, type Difficulty, type PencilMark, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
-import { solvePuzzle } from '@/utils/solvePuzzle';
 import { allContainDigit, coordsToString } from '@/utils/utils';
 import { defineStore, storeToRefs } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
 import { ref, watch } from 'vue';
-import { useHistoryStore } from './history';
-import { useMenuStore } from './menu';
-import { useSelectedStore } from './selected';
 
 export const useSudokuGridStore = defineStore('sudokuGrid', () => {
+  const worker = new Worker('/src/workers/solvePuzzle.js', { type: 'module' });
   const sudokuGrid = ref<SudokuGrid>({});
   const solvedGrid = ref<SudokuGrid>({});
+  const solutionReady = ref(false);
   const preventUpdate = ref(false);
   const selectedStore = useSelectedStore();
   const { setSelected } = selectedStore;
@@ -24,13 +25,26 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
 
   newGame('easy');
 
+  worker.onmessage = (e) => {
+    solvedGrid.value = e.data;
+    solutionReady.value = true;
+    console.log('Received solved puzzle');
+  };
+
   function newGame(difficulty: Difficulty) {
+    solutionReady.value = false;
     const puzzle = generateSudoku(difficulty);
     sudokuGrid.value = puzzle;
+    worker.postMessage(puzzle);
+  }
+
+  function importGame(puzzleString: string) {
     try {
-      solvedGrid.value = solvePuzzle(puzzle);
-    } catch (err) {
-      console.log(err);
+      const puzzle = generateBoardFromString(puzzleString);
+      sudokuGrid.value = puzzle;
+      worker.postMessage(puzzle);
+    } catch (error) {
+      alert(error);
     }
   }
 
@@ -197,7 +211,9 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
 
   return {
     sudokuGrid,
+    solutionReady,
     newGame,
+    importGame,
     isCorrect,
     isComplete,
     performCheck,
