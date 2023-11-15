@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import SudokuCell from '@/components/sudoku/SudokuCell.vue';
 import { BOARD_SIZE, BOX_SIZE } from '@/constants';
+import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { storeToRefs } from 'pinia';
+
+const store = useSudokuGridStore();
+const { sudokuGrid } = storeToRefs(store);
 </script>
 
 <template>
   <div class="board">
     <div class="board-wrapper">
       <div class="box" v-for="i in BOARD_SIZE" :key="i">
-        <SudokuCell v-for="j in BOARD_SIZE" :key="j" :boxNumber="i - 1" :cellNumber="j - 1" />
+        <template v-if="Object.keys(sudokuGrid).length > 0">
+          <SudokuCell v-for="j in BOARD_SIZE" :key="j" :boxNumber="i - 1" :cellNumber="j - 1" />
+        </template>
       </div>
     </div>
   </div>

@@ -4,15 +4,16 @@ import { useMenuStore } from '@/stores/menu';
 import { useSelectedStore } from '@/stores/selected';
 import { type Cell, type Difficulty, type PencilMark, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
-import { solvePuzzle } from '@/utils/solvePuzzle';
 import { allContainDigit, coordsToString } from '@/utils/utils';
 import { defineStore, storeToRefs } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
 import { ref, watch } from 'vue';
 
 export const useSudokuGridStore = defineStore('sudokuGrid', () => {
+  const worker = new Worker('/src/workers/solvePuzzle.js', { type: 'module' });
   const sudokuGrid = ref<SudokuGrid>({});
   const solvedGrid = ref<SudokuGrid>({});
+  const solutionReady = ref(false);
   const preventUpdate = ref(false);
   const selectedStore = useSelectedStore();
   const { setSelected } = selectedStore;
@@ -24,14 +25,17 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
 
   newGame('easy');
 
+  worker.onmessage = (e) => {
+    solvedGrid.value = e.data;
+    solutionReady.value = true;
+    console.log('Received solved puzzle');
+  };
+
   function newGame(difficulty: Difficulty) {
+    solutionReady.value = false;
     const puzzle = generateSudoku(difficulty);
     sudokuGrid.value = puzzle;
-    try {
-      solvedGrid.value = solvePuzzle(puzzle);
-    } catch (err) {
-      console.log(err);
-    }
+    worker.postMessage(puzzle);
   }
 
   function generateSudoku(difficulty: Difficulty) {
@@ -197,6 +201,7 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
 
   return {
     sudokuGrid,
+    solutionReady,
     newGame,
     isCorrect,
     isComplete,

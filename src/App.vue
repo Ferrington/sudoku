@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import GameMenu from '@/components/sudoku/GameMenu.vue';
+import GameMenu from '@/components/menus/GameMenu.vue';
 import SudokuControls from '@/components/sudoku/SudokuControls.vue';
 import SudokuGrid from '@/components/sudoku/SudokuGrid.vue';
-import { useGlobalInputs } from './composables/globalInputs';
+import { useGlobalInputs } from '@/composables/globalInputs';
 
 useGlobalInputs();
 </script>

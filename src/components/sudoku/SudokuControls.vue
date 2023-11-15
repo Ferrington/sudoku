@@ -137,7 +137,6 @@ const digitCounts = computed(() => {
 .wrapper {
   display: flex;
   gap: 10px;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .numpad {
@@ -155,7 +154,6 @@ const digitCounts = computed(() => {
 }
 
 .menu-select--button {
-  font-family: inherit;
   cursor: pointer;
   font-size: 1.2rem;
   padding: 5px 20px;
@@ -167,9 +165,7 @@ const digitCounts = computed(() => {
 
 .digits--button {
   font-size: 1.5rem;
-  font-weight: bold;
   cursor: pointer;
-  font-family: inherit;
 }
 
 .digits--button.delete {
