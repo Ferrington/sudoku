@@ -1,3 +1,4 @@
+import { useSolve } from '@/composables/solve';
 import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/constants';
 import { useHistoryStore } from '@/stores/history';
 import { useMenuStore } from '@/stores/menu';
@@ -10,12 +11,7 @@ import { getSudoku } from 'sudoku-gen';
 import { ref, watch } from 'vue';
 
 export const useSudokuGridStore = defineStore('sudokuGrid', () => {
-  const worker = new Worker(new URL('@/workers/solvePuzzle.js', import.meta.url), {
-    type: 'module',
-  });
   const sudokuGrid = ref<SudokuGrid>({});
-  const solvedGrid = ref<SudokuGrid>({});
-  const solutionReady = ref(false);
   const preventUpdate = ref(false);
   const selectedStore = useSelectedStore();
   const { setSelected } = selectedStore;
@@ -24,27 +20,22 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   const { activeMenu } = storeToRefs(menuStore);
   const historyStore = useHistoryStore();
   const { addSnapshot, prevSnapshot, nextSnapshot } = historyStore;
+  const { solvedGrid, solutionReady, solve } = useSolve();
 
   newGame('easy');
-
-  worker.onmessage = (e) => {
-    solvedGrid.value = e.data;
-    solutionReady.value = true;
-    console.log('Received solved puzzle');
-  };
 
   function newGame(difficulty: Difficulty) {
     solutionReady.value = false;
     const puzzle = generateSudoku(difficulty);
     sudokuGrid.value = puzzle;
-    worker.postMessage(puzzle);
+    solve(puzzle);
   }
 
   function importGame(puzzleString: string) {
     try {
       const puzzle = generateBoardFromString(puzzleString);
       sudokuGrid.value = puzzle;
-      worker.postMessage(puzzle);
+      solve(puzzle);
     } catch (error) {
       alert(error);
     }
