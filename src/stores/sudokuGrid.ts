@@ -1,4 +1,7 @@
 import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/constants';
+import { useHistoryStore } from '@/stores/history';
+import { useMenuStore } from '@/stores/menu';
+import { useSelectedStore } from '@/stores/selected';
 import { type Cell, type Difficulty, type PencilMark, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
 import { solvePuzzle } from '@/utils/solvePuzzle';
@@ -6,9 +9,6 @@ import { allContainDigit, coordsToString } from '@/utils/utils';
 import { defineStore, storeToRefs } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
 import { ref, watch } from 'vue';
-import { useHistoryStore } from './history';
-import { useMenuStore } from './menu';
-import { useSelectedStore } from './selected';
 
 export const useSudokuGridStore = defineStore('sudokuGrid', () => {
   const sudokuGrid = ref<SudokuGrid>({});

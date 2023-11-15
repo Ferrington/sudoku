@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import SudokuCell from '@/components/sudoku/SudokuCell.vue';
 import { BOARD_SIZE, BOX_SIZE } from '@/constants';
-import SudokuCell from './SudokuCell.vue';
 </script>
 
 <template>
@@ -22,8 +22,8 @@ import SudokuCell from './SudokuCell.vue';
 .board-wrapper {
   display: grid;
   grid-template-columns: repeat(v-bind(BOX_SIZE), auto);
-  gap: 2px;
-  padding: 1px;
+  gap: 4px;
+  padding: 4px;
 }
 
 .box {

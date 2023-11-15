@@ -1,31 +1,10 @@
 <script setup lang="ts">
-import GameMenu from './components/GameMenu.vue';
-import SudokuControls from './components/SudokuControls.vue';
-import SudokuGrid from './components/SudokuGrid.vue';
-import { useMenuStore } from './stores/menu';
-import { useSelectedStore } from './stores/selected';
-import { useSudokuGridStore } from './stores/sudokuGrid';
+import GameMenu from '@/components/sudoku/GameMenu.vue';
+import SudokuControls from '@/components/sudoku/SudokuControls.vue';
+import SudokuGrid from '@/components/sudoku/SudokuGrid.vue';
+import { useGlobalInputs } from './composables/globalInputs';
 
-const { setValueOnSelected, eraseDisqualifiedMarks, undo, redo } = useSudokuGridStore();
-const { arrowKeyMove } = useSelectedStore();
-const { setActiveMenu } = useMenuStore();
-
-window.addEventListener('keydown', (e) => {
-  if (e.key.toLowerCase() === 'z') {
-    if (e.getModifierState('Control') && e.getModifierState('Shift')) redo();
-    else if (e.getModifierState('Control')) undo();
-    else setActiveMenu('digit');
-  } else if (e.key === 'x') setActiveMenu('side');
-  else if (e.key === 'c') setActiveMenu('center');
-  else if (e.key === '.') eraseDisqualifiedMarks();
-  else if (['Delete', 'Backspace'].includes(e.key)) {
-    setValueOnSelected(0);
-  } else if (!isNaN(Number(e.key))) {
-    setValueOnSelected(Number(e.key));
-  } else if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
-    arrowKeyMove(e.key, e.getModifierState('Shift'));
-  }
-});
+useGlobalInputs();
 </script>
 
 <template>
