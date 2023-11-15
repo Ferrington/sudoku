@@ -38,6 +38,16 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     worker.postMessage(puzzle);
   }
 
+  function importGame(puzzleString: string) {
+    try {
+      const puzzle = generateBoardFromString(puzzleString);
+      sudokuGrid.value = puzzle;
+      worker.postMessage(puzzle);
+    } catch (error) {
+      alert(error);
+    }
+  }
+
   function generateSudoku(difficulty: Difficulty) {
     const sudoku = getSudoku(difficulty);
     return generateBoardFromString(sudoku.puzzle);
@@ -203,6 +213,7 @@ export const useSudokuGridStore = defineStore('sudokuGrid', () => {
     sudokuGrid,
     solutionReady,
     newGame,
+    importGame,
     isCorrect,
     isComplete,
     performCheck,

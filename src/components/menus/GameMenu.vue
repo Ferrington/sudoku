@@ -9,7 +9,7 @@ import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { ref } from 'vue';
 
 const sudokuGridStore = useSudokuGridStore();
-const { newGame, isCorrect, isComplete } = sudokuGridStore;
+const { newGame, importGame, isCorrect, isComplete } = sudokuGridStore;
 const { solutionReady } = storeToRefs(sudokuGridStore);
 const { clearSelected } = useSelectedStore();
 const showNewGameModal = ref(false);
@@ -34,6 +34,12 @@ function startNewGame(difficulty: Difficulty) {
   showNewGameModal.value = false;
   newGame(difficulty);
 }
+
+function startImportGame(puzzleString: string) {
+  clearSelected();
+  importGame(puzzleString);
+  showImportModal.value = false;
+}
 </script>
 
 <template>
@@ -51,7 +57,7 @@ function startNewGame(difficulty: Difficulty) {
     <NewGameMenu @new-game="startNewGame" />
   </TheModal>
   <TheModal v-if="showImportModal" @close="showImportModal = false">
-    <ImportMenu />
+    <ImportMenu @new-game="startImportGame" />
   </TheModal>
 </template>
 
