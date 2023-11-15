@@ -10,7 +10,9 @@ import { getSudoku } from 'sudoku-gen';
 import { ref, watch } from 'vue';
 
 export const useSudokuGridStore = defineStore('sudokuGrid', () => {
-  const worker = new Worker('/src/workers/solvePuzzle.js', { type: 'module' });
+  const worker = new Worker(new URL('@/workers/solvePuzzle.js', import.meta.url), {
+    type: 'module',
+  });
   const sudokuGrid = ref<SudokuGrid>({});
   const solvedGrid = ref<SudokuGrid>({});
   const solutionReady = ref(false);
