@@ -9,6 +9,8 @@ const {
   cell,
   isConflicting,
   isSelected,
+  isPrimaryHint,
+  isSecondaryHint,
   centerMarksSize,
   setSelected,
   appendSelected,
@@ -24,7 +26,14 @@ const {
     @mousedown.ctrl="appendSelected"
     @dblclick="selectAllWithValue"
   >
-    <div :class="{ outline: true, selected: isSelected }">
+    <div
+      :class="{
+        outline: true,
+        selected: isSelected,
+        'primary-hint': isPrimaryHint,
+        'secondary-hint': isSecondaryHint,
+      }"
+    >
       <div v-if="cell.value > 0" :class="cell.given ? 'given' : 'digit'">{{ cell.value }}</div>
       <div v-else-if="cell.pencilMarkType === 'side'" class="side-marks-wrapper">
         <div v-for="i in 9" :key="i" class="side-marks">
@@ -119,5 +128,12 @@ const {
   justify-content: center;
   font-size: v-bind(centerMarksSize);
   color: var(--highlight-color);
+}
+
+.primary-hint {
+  background: rgb(131, 255, 131) !important;
+}
+
+.secondary-hint {
 }
 </style>

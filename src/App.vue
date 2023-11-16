@@ -3,8 +3,12 @@ import GameMenu from '@/components/menus/GameMenu.vue';
 import SudokuControls from '@/components/sudoku/SudokuControls.vue';
 import SudokuGrid from '@/components/sudoku/SudokuGrid.vue';
 import { useGlobalInputs } from '@/composables/globalInputs';
+import { useHintStore } from '@/stores/hint';
+import { storeToRefs } from 'pinia';
 
 useGlobalInputs();
+const hintStore = useHintStore();
+const { hint } = storeToRefs(hintStore);
 </script>
 
 <template>
@@ -19,6 +23,7 @@ useGlobalInputs();
       </aside>
     </main>
   </div>
+  <div class="hint-message">{{ hint.message }}</div>
 </template>
 
 <style scoped>
@@ -38,5 +43,9 @@ aside {
   display: flex;
   flex-direction: column;
   gap: 50px;
+}
+
+.hint-message {
+  text-align: center;
 }
 </style>

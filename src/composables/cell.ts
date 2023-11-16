@@ -1,4 +1,5 @@
 import { useSelectCell } from '@/composables/selectCell';
+import { useHintStore } from '@/stores/hint';
 import { useSudokuGridStore } from '@/stores/sudokuGrid';
 import type { Cell } from '@/types';
 import { coordsToString } from '@/utils/utils';
@@ -9,6 +10,8 @@ export function useCell(boxNumber: number, cellNumber: number) {
   const sudokuStore = useSudokuGridStore();
   const { performCheckFromCell, selectAllWithValue } = sudokuStore;
   const { sudokuGrid } = storeToRefs(sudokuStore);
+  const hintStore = useHintStore();
+  const { hint } = storeToRefs(hintStore);
 
   const coordsString = computed((): string => getCoordsString());
   const { isSelected, setSelected, appendSelected } = useSelectCell(coordsString.value);
@@ -39,11 +42,16 @@ export function useCell(boxNumber: number, cellNumber: number) {
     return coordsToString(y, x);
   }
 
+  const isPrimaryHint = computed(() => hint.value.primaryCell === coordsString.value);
+  const isSecondaryHint = computed(() => hint.value.secondaryCells.includes(coordsString.value));
+
   return {
     cell,
     isConflicting,
     isSelected,
     centerMarksSize,
+    isPrimaryHint,
+    isSecondaryHint,
     setSelected: () => setSelected(coordsString.value),
     appendSelected: () => appendSelected(coordsString.value),
     selectAllWithValue: () => selectAllWithValue(cell.value.value),
