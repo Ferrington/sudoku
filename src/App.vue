@@ -3,16 +3,15 @@ import GameMenu from '@/components/menus/GameMenu.vue';
 import SudokuControls from '@/components/sudoku/SudokuControls.vue';
 import SudokuGrid from '@/components/sudoku/SudokuGrid.vue';
 import { useGlobalInputs } from '@/composables/globalInputs';
-import { useHintStore } from '@/stores/hint';
 import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
 
-const { newGame } = useSudokuStore();
+const sudokuStore = useSudokuStore();
+const { newGame } = sudokuStore;
+const { hint } = storeToRefs(sudokuStore);
 
 useGlobalInputs();
 newGame('easy');
-const hintStore = useHintStore();
-const { hint } = storeToRefs(hintStore);
 </script>
 
 <template>

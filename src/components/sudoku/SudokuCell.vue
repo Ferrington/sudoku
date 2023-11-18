@@ -131,9 +131,10 @@ const {
 }
 
 .primary-hint {
-  background: rgb(131, 255, 131) !important;
+  background: rgb(113, 252, 113) !important;
 }
 
 .secondary-hint {
+  background: rgb(196, 255, 196) !important;
 }
 </style>

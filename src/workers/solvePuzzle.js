@@ -36,7 +36,7 @@ function findCandidates(coordsString, grid) {
   const candidates = [...Array(BOARD_SIZE + 1).keys()].slice(1);
 
   const existing = new Set(
-    REGION_DICT[coordsString]
+    Object.values(REGION_DICT[coordsString])
       .map((region) => region.map((coords) => grid[coords].value))
       .flat()
       .filter((n) => n !== 0)

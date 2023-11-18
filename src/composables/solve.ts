@@ -15,7 +15,7 @@ export function useSolve() {
   worker.onmessage = (e) => {
     solvedGrid.value = e.data;
     solutionReady.value = true;
-    console.log('Received solved puzzle');
+    console.log('Puzzle Solved!');
   };
 
   return {

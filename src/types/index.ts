@@ -1,22 +1,13 @@
-// export type SudokuGrid = Cell[][];
 export type SudokuGrid = {
   [key: string]: Cell;
 };
 
 export type Cell = {
+  coords: string;
   value: number;
   given: boolean;
   pencilMarks: number[];
   pencilMarkType: PencilMark;
-};
-
-export type SolutionGrid = {
-  [key: string]: SolutionCell;
-};
-
-export type SolutionCell = {
-  value: number;
-  given: boolean;
   candidates: Set<number>;
 };
 
@@ -29,11 +20,15 @@ export type Coords = [number, number];
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
 export type RegionDict = {
-  [key: string]: string[][];
+  [key: string]: {
+    [key in Region]: string[];
+  };
 };
 
+export type Region = 'row' | 'col' | 'box';
+
 export type Hint = {
-  primaryCell: string;
+  primaryCells: string[];
   secondaryCells: string[];
   message: string;
 };

@@ -1,10 +1,10 @@
+import { useHint } from '@/composables/hint';
 import { useHistory } from '@/composables/history';
 import { useSelected } from '@/composables/selected';
 import { useSolve } from '@/composables/solve';
-import { BOARD_SIZE, BOX_SIZE, REGION_DICT } from '@/constants';
 import { type Cell, type Difficulty, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
-import { coordsToString } from '@/utils/utils';
+import { performCheck } from '@/utils/performCheck';
 import { defineStore } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
 import { ref } from 'vue';
@@ -13,6 +13,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   const sudokuGrid = ref<SudokuGrid>({});
   const history = useHistory(sudokuGrid);
   const selected = useSelected(sudokuGrid);
+  const hint = useHint(sudokuGrid);
 
   const { solvedGrid, solutionReady, solve } = useSolve();
 
@@ -35,42 +36,10 @@ export const useSudokuStore = defineStore('sudoku', () => {
 
   function generateSudoku(difficulty: Difficulty) {
     const sudoku = getSudoku(difficulty);
-    return generateBoardFromString(sudoku.puzzle);
-  }
-
-  function performCheck(checkAll: boolean, check: Function) {
-    /*
-      loop through unique regions
-
-      0 . . . . . . . .
-      . . . 1 . . . . .
-      . . . . . . 2 . .
-      . 3 . . . . . . .
-      . . . . 4 . . . .
-      . . . . . . . 5 .
-      . . 6 . . . . . . 
-      . . . . . 7 . . .
-      . . . . . . . . 8
-
-    */
-    let result = checkAll;
-    for (let i = 0; i < BOARD_SIZE; i++) {
-      const y = i;
-      const x = (i % BOX_SIZE) * BOX_SIZE + Math.floor(i / BOX_SIZE);
-      if (!performCheckFromCell(coordsToString(y, x), checkAll, check)) result = !checkAll;
-    }
-    return result;
-  }
-
-  function performCheckFromCell(coordsString: string, checkAll: boolean, check: Function) {
-    let result = checkAll;
-
-    REGION_DICT[coordsString].forEach((region) => {
-      const cells = region.map((coords) => sudokuGrid.value[coords]);
-      if (!check(cells)) result = !checkAll;
-    });
-
-    return result;
+    // return generateBoardFromString(sudoku.puzzle);
+    return generateBoardFromString(
+      '294513006600842319300697254000056000040080060000470000730164005900735001400928637'
+    );
   }
 
   function isCorrect() {
@@ -86,7 +55,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   }
 
   function eraseDisqualifiedMarks() {
-    performCheck(true, (cells: Cell[]) => {
+    performCheck(sudokuGrid.value, true, (cells: Cell[]) => {
       const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
       cells.forEach(
         (cell) => (cell.pencilMarks = cell.pencilMarks.filter((mark) => !values.includes(mark)))
@@ -101,10 +70,9 @@ export const useSudokuStore = defineStore('sudoku', () => {
     importGame,
     isCorrect,
     isComplete,
-    performCheck,
-    performCheckFromCell,
     eraseDisqualifiedMarks,
     ...history,
     ...selected,
+    ...hint,
   };
 });

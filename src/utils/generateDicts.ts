@@ -13,18 +13,22 @@ export function generateCells() {
 
 export function generateRegionDict() {
   const cells = generateCells();
-  const allRegions = [
-    ...cols.map((c) => crossProduct(rows, [c])),
-    ...rows.map((r) => crossProduct([r], cols)),
-    ...boxChunks.map((cs) => boxChunks.map((rs) => crossProduct([...rs], [...cs]))).flat(),
-  ];
+  const allRegions = {
+    rows: rows.map((r) => crossProduct([r], cols)),
+    cols: cols.map((c) => crossProduct(rows, [c])),
+    boxes: boxChunks.map((cs) => boxChunks.map((rs) => crossProduct([...rs], [...cs]))).flat(),
+  };
+
   const regionDict: RegionDict = cells.reduce((units, cell) => {
     return {
       ...units,
-      [cell]: allRegions.filter((region) => region.includes(cell)),
+      [cell]: {
+        row: allRegions.rows.find((row) => row.includes(cell)),
+        col: allRegions.cols.find((col) => col.includes(cell)),
+        box: allRegions.boxes.find((box) => box.includes(cell)),
+      },
     };
   }, {});
-
   return regionDict;
 }
 

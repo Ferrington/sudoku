@@ -2,16 +2,14 @@
 import TheModal from '@/components/base/TheModal.vue';
 import ImportMenu from '@/components/menus/ImportMenu.vue';
 import NewGameMenu from '@/components/menus/NewGameMenu.vue';
-import { useHintStore } from '@/stores/hint';
 import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
 import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { ref } from 'vue';
 
 const sudokuStore = useSudokuStore();
-const { newGame, importGame, isCorrect, isComplete, clearSelected } = sudokuStore;
+const { newGame, importGame, isCorrect, isComplete, clearSelected, getHint } = sudokuStore;
 const { solutionReady } = storeToRefs(sudokuStore);
-const { getHint } = useHintStore();
 const showNewGameModal = ref(false);
 const showImportModal = ref(false);
 const solution = ref({
