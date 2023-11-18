@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import SudokuCell from '@/components/sudoku/SudokuCell.vue';
 import { BOARD_SIZE, BOX_SIZE } from '@/constants';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
 
-const store = useSudokuGridStore();
-const { sudokuGrid } = storeToRefs(store);
+const sudokuStore = useSudokuStore();
+const { sudokuGrid } = storeToRefs(sudokuStore);
 </script>
 
 <template>
@@ -39,4 +39,4 @@ const { sudokuGrid } = storeToRefs(store);
   gap: 1px;
 }
 </style>
-@/constants/constants
+@/constants/constants @/stores/sudoku

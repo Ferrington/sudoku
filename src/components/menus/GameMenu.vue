@@ -3,17 +3,15 @@ import TheModal from '@/components/base/TheModal.vue';
 import ImportMenu from '@/components/menus/ImportMenu.vue';
 import NewGameMenu from '@/components/menus/NewGameMenu.vue';
 import { useHintStore } from '@/stores/hint';
-import { useSelectedStore } from '@/stores/selected';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
 import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { ref } from 'vue';
 
-const sudokuGridStore = useSudokuGridStore();
-const { newGame, importGame, isCorrect, isComplete } = sudokuGridStore;
-const { solutionReady } = storeToRefs(sudokuGridStore);
+const sudokuStore = useSudokuStore();
+const { newGame, importGame, isCorrect, isComplete, clearSelected } = sudokuStore;
+const { solutionReady } = storeToRefs(sudokuStore);
 const { getHint } = useHintStore();
-const { clearSelected } = useSelectedStore();
 const showNewGameModal = ref(false);
 const showImportModal = ref(false);
 const solution = ref({
@@ -84,3 +82,4 @@ function startImportGame(puzzleString: string) {
   font-size: 1.2rem;
 }
 </style>
+@/stores/sudoku

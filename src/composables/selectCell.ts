@@ -1,11 +1,11 @@
-import { useSelectedStore } from '@/stores/selected';
+import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 export function useSelectCell(coordsString: string) {
-  const selectedStore = useSelectedStore();
-  const { setSelected, appendSelected } = selectedStore;
-  const { selectedCells } = storeToRefs(selectedStore);
+  const sudokuStore = useSudokuStore();
+  const { setSelected, appendSelected } = sudokuStore;
+  const { selectedCells } = storeToRefs(sudokuStore);
 
   const isSelected = computed((): Boolean => {
     return selectedCells.value.some((cs) => cs === coordsString);

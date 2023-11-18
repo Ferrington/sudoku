@@ -1,12 +1,12 @@
 import { REGION_DICT } from '@/constants';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { useSudokuStore } from '@/stores/sudoku';
 import type { Hint, SolutionGrid } from '@/types';
 import { defineStore, storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 export const useHintStore = defineStore('hint', () => {
-  const sudokuGridStore = useSudokuGridStore();
-  const { sudokuGrid } = storeToRefs(sudokuGridStore);
+  const sudokuStore = useSudokuStore();
+  const { sudokuGrid } = storeToRefs(sudokuStore);
   const solutionGrid = ref<SolutionGrid>({});
   const hint = ref<Hint>({
     primaryCell: '',
@@ -21,6 +21,17 @@ export const useHintStore = defineStore('hint', () => {
     while (gridChanged) {
       gridChanged = false;
 
+      // removes values from candidate set when they are clearly disqualified
+      if (eliminateCandidates()) {
+        gridChanged = true;
+        console.log('eliminated obvious candidates');
+
+        Object.entries(sudokuGrid.value).forEach(([coords, cell]) => {
+          cell.pencilMarkType = 'side';
+          cell.pencilMarks = [...solutionGrid.value[coords].candidates];
+        });
+      }
+
       // will place number if only a single candidate remains
       const placedCoords = placeNumbers();
       if (placedCoords) {
@@ -31,19 +42,6 @@ export const useHintStore = defineStore('hint', () => {
         };
         console.log('number placed');
         return;
-      }
-
-      // removes values from candidate set when they are clearly disqualified
-      if (eliminateCandidates()) {
-        gridChanged = true;
-        console.log('eliminated obvious candidates');
-
-        Object.entries(sudokuGrid.value).forEach(([coords, cell]) => {
-          cell.pencilMarkType = 'side';
-          cell.pencilMarks = [...solutionGrid.value[coords].candidates];
-        });
-
-        continue;
       }
     }
   }

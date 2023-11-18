@@ -1,11 +1,8 @@
-import { useMenuStore } from '@/stores/menu';
-import { useSelectedStore } from '@/stores/selected';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { useSudokuStore } from '@/stores/sudoku';
 
 export function useGlobalInputs() {
-  const { setValueOnSelected, eraseDisqualifiedMarks, undo, redo } = useSudokuGridStore();
-  const { arrowKeyMove } = useSelectedStore();
-  const { setActiveMenu } = useMenuStore();
+  const { setValueOnSelected, eraseDisqualifiedMarks, undo, redo, setActiveMenu, arrowKeyMove } =
+    useSudokuStore();
 
   window.addEventListener('keydown', (e) => {
     if (e.key.toLowerCase() === 'z') {

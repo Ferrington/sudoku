@@ -1,13 +1,13 @@
 import { useSelectCell } from '@/composables/selectCell';
 import { useHintStore } from '@/stores/hint';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { useSudokuStore } from '@/stores/sudoku';
 import type { Cell } from '@/types';
 import { coordsToString } from '@/utils/utils';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 export function useCell(boxNumber: number, cellNumber: number) {
-  const sudokuStore = useSudokuGridStore();
+  const sudokuStore = useSudokuStore();
   const { performCheckFromCell, selectAllWithValue } = sudokuStore;
   const { sudokuGrid } = storeToRefs(sudokuStore);
   const hintStore = useHintStore();
