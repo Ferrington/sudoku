@@ -4,6 +4,7 @@ import { useSelected } from '@/composables/selected';
 import { useSolve } from '@/composables/solve';
 import { type Cell, type Difficulty, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
+import { isComplete as _isComplete } from '@/utils/isComplete';
 import { isCorrect as _isCorrect } from '@/utils/isCorrect';
 import { performCheck } from '@/utils/performCheck';
 import { defineStore } from 'pinia';
@@ -41,7 +42,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
     //   '294513006600842319300697254000056000040080060000470000730164005900735001400928637'
     // );
     return generateBoardFromString(
-      '294513006600842319300697254000056000040080060000470000730164005900735001400928637'
+      '000001030231090000065003100678924300103050006000136700009360570006019843300000000'
     );
   }
 
@@ -50,7 +51,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   }
 
   function isComplete() {
-    return !Object.values(sudokuGrid.value).some((cell) => cell.value === 0);
+    return _isComplete(sudokuGrid);
   }
 
   function eraseDisqualifiedMarks() {

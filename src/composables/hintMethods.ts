@@ -99,15 +99,11 @@ export function useHintMethods() {
           (cell) => cell.value === 0 && [...cell.candidates].every((n) => combo.includes(n))
         );
 
-        if (
-          matches.length < n ||
-          matches.every((cell) => sameMembers(cell.pencilMarks, [...cell.candidates]))
-        )
-          return false;
+        if (matches.length < n) return false;
 
         const matchCoords = matches.map((cell) => cell.coords);
         const secondaryCoords: string[] = [];
-        Object.entries(REGION_DICT[matches[0].coords]).forEach(([region, coords]) => {
+        Object.entries(REGION_DICT[matches[0].coords]).forEach(([, coords]) => {
           if (matchCoords.every((coord) => coords.includes(coord))) {
             coords.forEach((coord) => {
               const cell = sudokuGrid.value[coord];
@@ -119,6 +115,9 @@ export function useHintMethods() {
             });
           }
         });
+
+        if (matches.every((cell) => sameMembers(cell.pencilMarks, [...cell.candidates])))
+          return true;
 
         const methodName = n === 2 ? 'Naked Pair' : 'Naked Triple';
 
@@ -137,11 +136,64 @@ export function useHintMethods() {
     return foundTriple;
   }
 
+  function hiddenPair(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
+    return hiddenN(sudokuGrid, hint, 2);
+  }
+
+  function hiddenTriple(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
+    return hiddenN(sudokuGrid, hint, 3);
+  }
+
+  function hiddenN(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>, n: number) {
+    let foundTriple = false;
+    performCheck(sudokuGrid.value, false, (cells: Cell[]) => {
+      const candidateUnion = cells
+        .map((cell) => [...cell.candidates])
+        .reduce((result, candidates) => {
+          return [...new Set([...result, ...candidates])];
+        }, []);
+      const allCombos = [...comb(candidateUnion, n)];
+      allCombos.some((combo) => {
+        const matches = cells.filter(
+          (cell) => cell.value === 0 && [...cell.candidates].some((n) => combo.includes(n))
+        );
+
+        if (matches.length != n) return false;
+
+        const matchCoords = matches.map((cell) => cell.coords);
+        matches.forEach((cell) => {
+          cell.candidates.forEach((n) => {
+            if (!combo.includes(n)) cell.candidates.delete(n);
+          });
+        });
+
+        if (matches.every((cell) => sameMembers(cell.pencilMarks, [...cell.candidates])))
+          return true;
+
+        const methodName = n === 2 ? 'Hidden Pair' : 'Hidden Triple';
+
+        hint.value = {
+          primaryCells: matchCoords,
+          secondaryCells: [],
+          incorrectCells: [],
+          message: `[${methodName}] These cells form a ${methodName.toLowerCase()}.`,
+        };
+        foundTriple = true;
+        return true;
+      });
+      return foundTriple;
+    });
+
+    return foundTriple;
+  }
+
   return {
     eliminateCandidates,
     nakedSingle,
     hiddenSingle,
     nakedPair,
     nakedTriple,
+    hiddenPair,
+    hiddenTriple,
   };
 }

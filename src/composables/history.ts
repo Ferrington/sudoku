@@ -21,6 +21,7 @@ export function useHistory(sudokuGrid: Ref<SudokuGrid>) {
     else index.value++;
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   function prevSnapshot() {
     if (cannotUndo.value) return;
     return structuredClone(toRaw(history.value[--index.value]));
@@ -30,6 +31,7 @@ export function useHistory(sudokuGrid: Ref<SudokuGrid>) {
     if (cannotRedo.value) return;
     return structuredClone(toRaw(history.value[++index.value]));
   }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   function pruneTimeline() {
     history.value = history.value.slice(0, index.value + 1);

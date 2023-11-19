@@ -1,5 +1,6 @@
 import { useHintMethods } from '@/composables/hintMethods';
 import type { Hint, SudokuGrid } from '@/types';
+import { isComplete } from '@/utils/isComplete';
 import { isCorrect } from '@/utils/isCorrect';
 import { ref, type Ref } from 'vue';
 
@@ -11,8 +12,15 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
     message: '',
   });
 
-  const { eliminateCandidates, nakedSingle, hiddenSingle, nakedPair, nakedTriple } =
-    useHintMethods();
+  const {
+    eliminateCandidates,
+    nakedSingle,
+    hiddenSingle,
+    nakedPair,
+    nakedTriple,
+    hiddenPair,
+    hiddenTriple,
+  } = useHintMethods();
 
   function getHint() {
     clearHint();
@@ -21,12 +29,21 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       highlightIncorrectCells();
       console.log('!! board is wrong !!');
       return;
+    } else if (isComplete(sudokuGrid)) {
+      return;
     }
 
     // removes values from candidate set when they are clearly disqualified
     eliminateCandidates(sudokuGrid);
 
-    const hintMethods = [nakedSingle, hiddenSingle, nakedPair, nakedTriple];
+    const hintMethods = [
+      nakedSingle,
+      hiddenSingle,
+      nakedPair,
+      nakedTriple,
+      hiddenPair,
+      hiddenTriple,
+    ];
 
     const generatedHint = hintMethods.some((method) => {
       if (method(sudokuGrid, hint)) {

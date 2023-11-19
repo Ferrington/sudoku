@@ -100,3 +100,47 @@ test('can find naked triple', () => {
   expect(hint.value.secondaryCells.sort()).toEqual(['3,1', '3,2', '4,2', '5,1', '5,2'].sort());
   expect(puzzle.value['3,2'].candidates).toEqual(new Set([2, 3, 7, 9]));
 });
+
+test('can find hidden pair', () => {
+  const puzzle = ref(
+    generateBoardFromString(
+      '000000000904607000076804100309701080708000301051308702007502610005403208000000000'
+    )
+  );
+  const hint = ref<Hint>({
+    primaryCells: [],
+    secondaryCells: [],
+    incorrectCells: [],
+    message: '',
+  });
+  const { eliminateCandidates, hiddenPair } = useHintMethods();
+  eliminateCandidates(puzzle);
+  hiddenPair(puzzle, hint);
+
+  expect(hint.value.primaryCells.sort()).toEqual(['0,7', '0,8'].sort());
+  expect(hint.value.secondaryCells).toEqual([]);
+  expect(puzzle.value['0,7'].candidates).toEqual(new Set([6, 7]));
+  expect(puzzle.value['0,8'].candidates).toEqual(new Set([6, 7]));
+});
+
+test('can find hidden triple', () => {
+  const puzzle = ref(
+    generateBoardFromString(
+      '000001030231090000065003100678924300103050006000136700009360570006019843300000000'
+    )
+  );
+  const hint = ref<Hint>({
+    primaryCells: [],
+    secondaryCells: [],
+    incorrectCells: [],
+    message: '',
+  });
+  const { eliminateCandidates, hiddenTriple } = useHintMethods();
+  eliminateCandidates(puzzle);
+  hiddenTriple(puzzle, hint);
+
+  expect(hint.value.primaryCells.sort()).toEqual(['0,3', '0,6', '0,8'].sort());
+  expect(hint.value.secondaryCells).toEqual([]);
+  expect(puzzle.value['0,3'].candidates).toEqual(new Set([2, 5, 6]));
+  expect(puzzle.value['0,8'].candidates).toEqual(new Set([2, 5]));
+});
