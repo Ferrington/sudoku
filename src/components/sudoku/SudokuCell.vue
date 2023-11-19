@@ -11,6 +11,7 @@ const {
   isSelected,
   isPrimaryHint,
   isSecondaryHint,
+  isIncorrectCell,
   centerMarksSize,
   setSelected,
   appendSelected,
@@ -32,6 +33,7 @@ const {
         selected: isSelected,
         'primary-hint': isPrimaryHint,
         'secondary-hint': isSecondaryHint,
+        'incorrect-cell': isIncorrectCell,
       }"
     >
       <div v-if="cell.value > 0" :class="cell.given ? 'given' : 'digit'">{{ cell.value }}</div>
@@ -136,5 +138,9 @@ const {
 
 .secondary-hint {
   background: rgb(255, 242, 62) !important;
+}
+
+.incorrect-cell {
+  background: rgb(255, 196, 196) !important;
 }
 </style>

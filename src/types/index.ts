@@ -30,5 +30,6 @@ export type Region = 'row' | 'col' | 'box';
 export type Hint = {
   primaryCells: string[];
   secondaryCells: string[];
+  incorrectCells: string[];
   message: string;
 };

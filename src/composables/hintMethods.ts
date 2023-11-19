@@ -34,6 +34,7 @@ export function useHintMethods() {
       hint.value = {
         primaryCells: [coords],
         secondaryCells: [],
+        incorrectCells: [],
         message: '[Naked Single] There is only one number that can be placed in this cell.',
       };
       placedCoords = true;
@@ -65,6 +66,7 @@ export function useHintMethods() {
           secondaryCells: cells
             .filter((cell) => cell.coords != cellWithSingle!.coords && cell.value === 0)
             .map((cell) => cell.coords),
+          incorrectCells: [],
           message: `[Hidden Single] This cell's value cannot be placed anywhere else in the ${region}.`,
         };
         return true;
@@ -101,6 +103,7 @@ export function useHintMethods() {
         hint.value = {
           primaryCells: cellsWithPair.map((cell) => cell.coords),
           secondaryCells: [],
+          incorrectCells: [],
           message: `[Naked Double] These two cells form a naked double.`,
         };
         return true;
@@ -152,6 +155,7 @@ export function useHintMethods() {
         hint.value = {
           primaryCells: matchCoords,
           secondaryCells: secondaryCoords,
+          incorrectCells: [],
           message: `[Naked Triple] These three cells form a naked triple. You can eliminate their values from the highlighted regions.`,
         };
         foundTriple = true;

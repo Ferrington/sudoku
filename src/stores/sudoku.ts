@@ -4,6 +4,7 @@ import { useSelected } from '@/composables/selected';
 import { useSolve } from '@/composables/solve';
 import { type Cell, type Difficulty, type SudokuGrid } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
+import { isCorrect as _isCorrect } from '@/utils/isCorrect';
 import { performCheck } from '@/utils/performCheck';
 import { defineStore } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
@@ -13,9 +14,8 @@ export const useSudokuStore = defineStore('sudoku', () => {
   const sudokuGrid = ref<SudokuGrid>({});
   const history = useHistory(sudokuGrid);
   const selected = useSelected(sudokuGrid);
-  const hint = useHint(sudokuGrid);
-
   const { solvedGrid, solutionReady, solve } = useSolve();
+  const hint = useHint(sudokuGrid, solvedGrid);
 
   function newGame(difficulty: Difficulty) {
     solutionReady.value = false;
@@ -46,11 +46,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   }
 
   function isCorrect() {
-    return Object.entries(solvedGrid.value).reduce((bool, [coordsString, solvedCell]) => {
-      const cellValue = sudokuGrid.value[coordsString].value;
-      if (cellValue !== 0 && cellValue !== solvedCell.value) return false;
-      return bool;
-    }, true);
+    return _isCorrect(sudokuGrid, solvedGrid);
   }
 
   function isComplete() {

@@ -27,6 +27,7 @@ test('can find naked single', () => {
   const hint = ref<Hint>({
     primaryCells: [],
     secondaryCells: [],
+    incorrectCells: [],
     message: '',
   });
   const { eliminateCandidates, nakedSingle } = useHintMethods();
@@ -46,6 +47,7 @@ test('can find hidden single', () => {
   const hint = ref<Hint>({
     primaryCells: [],
     secondaryCells: [],
+    incorrectCells: [],
     message: '',
   });
   const { eliminateCandidates, hiddenSingle } = useHintMethods();
@@ -65,6 +67,7 @@ test('can find naked pair', () => {
   const hint = ref<Hint>({
     primaryCells: [],
     secondaryCells: [],
+    incorrectCells: [],
     message: '',
   });
   const { eliminateCandidates, nakedPair } = useHintMethods();
@@ -84,6 +87,7 @@ test('can find naked triple', () => {
   const hint = ref<Hint>({
     primaryCells: [],
     secondaryCells: [],
+    incorrectCells: [],
     message: '',
   });
   const { eliminateCandidates, nakedTriple } = useHintMethods();
