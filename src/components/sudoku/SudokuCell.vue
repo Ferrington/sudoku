@@ -135,6 +135,6 @@ const {
 }
 
 .secondary-hint {
-  background: rgb(196, 255, 196) !important;
+  background: rgb(255, 242, 62) !important;
 }
 </style>

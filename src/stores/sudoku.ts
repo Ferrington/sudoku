@@ -37,6 +37,9 @@ export const useSudokuStore = defineStore('sudoku', () => {
   function generateSudoku(difficulty: Difficulty) {
     const sudoku = getSudoku(difficulty);
     // return generateBoardFromString(sudoku.puzzle);
+    // return generateBoardFromString(
+    //   '294513006600842319300697254000056000040080060000470000730164005900735001400928637'
+    // );
     return generateBoardFromString(
       '294513006600842319300697254000056000040080060000470000730164005900735001400928637'
     );
@@ -60,6 +63,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
       cells.forEach(
         (cell) => (cell.pencilMarks = cell.pencilMarks.filter((mark) => !values.includes(mark)))
       );
+      return true;
     });
   }
 

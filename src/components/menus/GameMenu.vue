@@ -8,7 +8,8 @@ import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { ref } from 'vue';
 
 const sudokuStore = useSudokuStore();
-const { newGame, importGame, isCorrect, isComplete, clearSelected, getHint } = sudokuStore;
+const { newGame, importGame, isCorrect, isComplete, clearSelected, getHint, drawCandidates } =
+  sudokuStore;
 const { solutionReady } = storeToRefs(sudokuStore);
 const showNewGameModal = ref(false);
 const showImportModal = ref(false);
@@ -50,6 +51,7 @@ function startImportGame(puzzleString: string) {
       Check Solution
     </button>
     <button type="button" class="button" @click="getHint">Get Hint</button>
+    <button type="button" class="button" @click="drawCandidates">Draw Candidates</button>
     <p :class="{ wrong: solution.bad, message: true }">{{ solution.message }}</p>
   </div>
   <TheModal v-if="showNewGameModal" @close="showNewGameModal = false">
