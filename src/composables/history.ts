@@ -36,17 +36,17 @@ export function useHistory(sudokuGrid: Ref<SudokuGrid>) {
   }
 
   function undo() {
-    const prev = prevSnapshot();
-    if (prev == null) return;
-    preventUpdate.value = true;
-    sudokuGrid.value = prev;
+    // const prev = prevSnapshot();
+    // if (prev == null) return;
+    // preventUpdate.value = true;
+    // sudokuGrid.value = prev;
   }
 
   function redo() {
-    const next = nextSnapshot();
-    if (next == null) return;
-    preventUpdate.value = true;
-    sudokuGrid.value = next;
+    // const next = nextSnapshot();
+    // if (next == null) return;
+    // preventUpdate.value = true;
+    // sudokuGrid.value = next;
   }
 
   // watchers

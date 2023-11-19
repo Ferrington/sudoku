@@ -78,43 +78,14 @@ export function useHintMethods() {
   }
 
   function nakedPair(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
-    let foundPair = false;
-    performCheck(sudokuGrid.value, false, (cells: Cell[]) => {
-      const counts = cells.reduce(
-        (counts, cell) => {
-          const candidateString = Array.from(cell.candidates).sort().join('');
-          if (candidateString.length !== 2) return counts;
-
-          if (candidateString in counts) counts[candidateString]++;
-          else counts[candidateString] = 1;
-          return counts;
-        },
-        {} as { [key: string]: number }
-      );
-
-      foundPair = Object.entries(counts).some(([key, value]) => {
-        if (value !== 2) return false;
-
-        const cellsWithPair = cells.filter(
-          (cell) => Array.from(cell.candidates).sort().join('') === key
-        );
-        if (cellsWithPair.every((cell) => cell.pencilMarks.sort().join('') === key)) return false;
-
-        hint.value = {
-          primaryCells: cellsWithPair.map((cell) => cell.coords),
-          secondaryCells: [],
-          incorrectCells: [],
-          message: `[Naked Double] These two cells form a naked double.`,
-        };
-        return true;
-      });
-      return foundPair;
-    });
-
-    return foundPair;
+    return nakedN(sudokuGrid, hint, 2);
   }
 
   function nakedTriple(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
+    return nakedN(sudokuGrid, hint, 3);
+  }
+
+  function nakedN(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>, n: number) {
     let foundTriple = false;
     performCheck(sudokuGrid.value, false, (cells: Cell[]) => {
       const candidateUnion = cells
@@ -122,14 +93,14 @@ export function useHintMethods() {
         .reduce((result, candidates) => {
           return [...new Set([...result, ...candidates])];
         }, []);
-      const allCombos = [...comb(candidateUnion, 3)];
+      const allCombos = [...comb(candidateUnion, n)];
       allCombos.some((combo) => {
         const matches = cells.filter(
           (cell) => cell.value === 0 && [...cell.candidates].every((n) => combo.includes(n))
         );
 
         if (
-          matches.length < 3 ||
+          matches.length < n ||
           matches.every((cell) => sameMembers(cell.pencilMarks, [...cell.candidates]))
         )
           return false;
@@ -149,14 +120,13 @@ export function useHintMethods() {
           }
         });
 
-        // console.log(REGION_DICT[matches[0].coords]);
-        // console.log(matches.map((cell) => cell.coords));
+        const methodName = n === 2 ? 'Naked Pair' : 'Naked Triple';
 
         hint.value = {
           primaryCells: matchCoords,
           secondaryCells: secondaryCoords,
           incorrectCells: [],
-          message: `[Naked Triple] These three cells form a naked triple. You can eliminate their values from the highlighted regions.`,
+          message: `[${methodName}] These cells form a ${methodName.toLowerCase()}. You can eliminate their values from the highlighted regions.`,
         };
         foundTriple = true;
         return true;

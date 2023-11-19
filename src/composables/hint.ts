@@ -26,34 +26,24 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
     // removes values from candidate set when they are clearly disqualified
     eliminateCandidates(sudokuGrid);
 
-    // will place number if only a single candidate remains
-    if (nakedSingle(sudokuGrid, hint)) {
-      console.log('last candidate');
-      return;
-    }
+    const hintMethods = [nakedSingle, hiddenSingle, nakedPair, nakedTriple];
 
-    if (hiddenSingle(sudokuGrid, hint)) {
-      console.log('hidden single');
-      return;
-    }
+    const generatedHint = hintMethods.some((method) => {
+      if (method(sudokuGrid, hint)) {
+        console.log(method.name);
+        return true;
+      }
+      return false;
+    });
+    if (generatedHint) return;
 
-    if (nakedPair(sudokuGrid, hint)) {
-      console.log('naked pair');
-      return;
-    }
-
-    if (nakedTriple(sudokuGrid, hint)) {
-      console.log('naked triple');
-      return;
-    }
-
-    console.log('!! Failed to generate hint !!');
     hint.value = {
       primaryCells: [],
       secondaryCells: [],
       incorrectCells: [],
       message: "Failed to generate a hint. You're on your own",
     };
+    console.log('!! Failed to generate hint !!');
   }
 
   function highlightIncorrectCells() {

@@ -55,7 +55,7 @@ test('can find hidden single', () => {
   hiddenSingle(puzzle, hint);
 
   expect(hint.value.primaryCells).toEqual(['0,1']);
-  expect(hint.value.secondaryCells).toEqual(['0,2', '0,3', '0,5', '0,6']);
+  expect(hint.value.secondaryCells.sort()).toEqual(['0,2', '0,3', '0,5', '0,6'].sort());
 });
 
 test('can find naked pair', () => {
@@ -74,8 +74,10 @@ test('can find naked pair', () => {
   eliminateCandidates(puzzle);
   nakedPair(puzzle, hint);
 
-  expect(hint.value.primaryCells).toEqual(['0,1', '0,2']);
-  expect(hint.value.secondaryCells).toEqual([]);
+  expect(hint.value.primaryCells.sort()).toEqual(['0,1', '0,2'].sort());
+  expect(hint.value.secondaryCells.sort()).toEqual(['1,0', '2,0', '0,3', '0,4', '0,5'].sort());
+  expect(puzzle.value['0,4'].candidates).toEqual(new Set([2, 5, 7]));
+  expect(puzzle.value['2,0'].candidates).toEqual(new Set([7, 8]));
 });
 
 test('can find naked triple', () => {
@@ -94,6 +96,7 @@ test('can find naked triple', () => {
   eliminateCandidates(puzzle);
   nakedTriple(puzzle, hint);
 
-  expect(hint.value.primaryCells).toEqual(['3,0', '4,0', '5,0']);
-  expect(hint.value.secondaryCells).toEqual(['3,1', '3,2', '4,2', '5,1', '5,2']);
+  expect(hint.value.primaryCells.sort()).toEqual(['3,0', '4,0', '5,0'].sort());
+  expect(hint.value.secondaryCells.sort()).toEqual(['3,1', '3,2', '4,2', '5,1', '5,2'].sort());
+  expect(puzzle.value['3,2'].candidates).toEqual(new Set([2, 3, 7, 9]));
 });

@@ -21,7 +21,7 @@ const digitCounts = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div v-if="false">
     <button
       type="button"
       class="time-travel-button"
