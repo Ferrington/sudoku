@@ -1,3 +1,4 @@
+export * from './boxLineReduction';
 export * from './eliminateCandidates';
 export * from './hiddenN';
 export * from './hiddenSingle';

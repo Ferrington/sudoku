@@ -1,37 +1,34 @@
 import { REGION_DICT } from '@/constants';
-import type { Cell, Coords, Hint, Region, SudokuGrid } from '@/types';
+import type { Cell, Hint, Region, SudokuGrid } from '@/types';
 import { performCheck } from '@/utils/performCheck';
-import { coordsToString, stringToCoords } from '@/utils/utils';
 import type { Ref } from 'vue';
 
-export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
+export function boxLineReduction(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
   let foundPointing = false;
   performCheck(sudokuGrid.value, false, (cells: Cell[], region: Region) => {
-    if (region !== 'box') return false;
+    if (region === 'box') return false;
 
     const numberCells = cells.reduce(
       (result, cell) => {
         cell.candidates.forEach((n) => {
-          if (n in result) result[n].push(stringToCoords(cell.coords));
-          else result[n] = [stringToCoords(cell.coords)];
+          if (n in result) result[n].push(cell.coords);
+          else result[n] = [cell.coords];
         });
         return result;
       },
-      {} as { [key: number]: Coords[] }
+      {} as Record<number, string[]>
     );
 
     const pointingNumbers = Object.entries(numberCells)
       .filter(([, coordsArr]) => {
-        return (
-          coordsArr.every(([y]) => y === coordsArr[0][0]) ||
-          coordsArr.every(([, x]) => x === coordsArr[0][1])
-        );
+        return coordsArr.every((y) => REGION_DICT[coordsArr[0]].box.includes(y));
       })
       .map(([n, coordsArr]): [number, string[], Region] => {
-        const direction = coordsArr[0][0] === coordsArr[1][0] ? 'row' : 'col';
-        const coords = coordsArr.map(([y, x]) => coordsToString(y, x));
-        return [Number(n), coords, direction];
+        const direction = 'box';
+        return [Number(n), coordsArr, direction];
       });
+
+    console.log(pointingNumbers);
 
     pointingNumbers.some(([n, coords, region]) => {
       let missingPencilMarks = false;
@@ -52,7 +49,7 @@ export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
           primaryCells: coords,
           secondaryCells: REGION_DICT[coords[0]][region].filter((cell) => !coords.includes(cell)),
           incorrectCells: [],
-          message: `[Pointing Numbers] ${n} can only appear in a single ${region} in this box. They can be eliminated from the rest of the ${region}.`,
+          message: `[Box Line Reduction] ${n} can only appear in a single row/column in this box. They can be eliminated from the rest of the ${region}.`,
         };
       }
 

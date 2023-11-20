@@ -8,7 +8,6 @@ import { isComplete as _isComplete } from '@/utils/isComplete';
 import { isCorrect as _isCorrect } from '@/utils/isCorrect';
 import { performCheck } from '@/utils/performCheck';
 import { defineStore } from 'pinia';
-import { getSudoku } from 'sudoku-gen';
 import { ref } from 'vue';
 
 export const useSudokuStore = defineStore('sudoku', () => {
@@ -36,11 +35,11 @@ export const useSudokuStore = defineStore('sudoku', () => {
   }
 
   function generateSudoku(difficulty: Difficulty) {
-    const sudoku = getSudoku(difficulty);
-    return generateBoardFromString(sudoku.puzzle);
-    // return generateBoardFromString(
-    //   '294513006600842319300697254000056000040080060000470000730164005900735001400928637'
-    // );
+    // const sudoku = getSudoku(difficulty);
+    // return generateBoardFromString(sudoku.puzzle);
+    return generateBoardFromString(
+      '016007803092800000870001260048000300650009082039000650060900020080002936924600510'
+    );
   }
 
   function isCorrect() {

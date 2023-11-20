@@ -1,5 +1,6 @@
 import type { Hint, SudokuGrid } from '@/types';
 import {
+  boxLineReduction,
   eliminateCandidates,
   hiddenPair,
   hiddenSingle,
@@ -41,6 +42,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       nakedPair,
       hiddenPair,
       pointingNumbers,
+      boxLineReduction,
       nakedTriple,
       hiddenTriple,
     ];

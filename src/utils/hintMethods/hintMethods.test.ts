@@ -1,6 +1,7 @@
 import type { Hint } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
 import {
+  boxLineReduction,
   eliminateCandidates,
   hiddenPair,
   hiddenSingle,
@@ -164,4 +165,22 @@ test('can find pointing numbers', () => {
 
   expect(puzzle.value['1,2'].candidates).toEqual(new Set([6]));
   expect(puzzle.value['1,0'].candidates).toEqual(new Set([2, 4, 5, 6]));
+});
+
+test('can find box line reduction', () => {
+  const puzzle = ref(
+    generateBoardFromString(
+      '016007803092800000870001260048000300650009082039000650060900020080002936924600510'
+    )
+  );
+  const hint = ref<Hint>({
+    primaryCells: [],
+    secondaryCells: [],
+    incorrectCells: [],
+    message: '',
+  });
+  eliminateCandidates(puzzle);
+  boxLineReduction(puzzle, hint);
+  expect(puzzle.value['1,6'].candidates).toEqual(new Set([1, 7]));
+  expect(puzzle.value['2,8'].candidates).toEqual(new Set([5, 9]));
 });
