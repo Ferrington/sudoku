@@ -28,8 +28,6 @@ export function boxLineReduction(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
         return [Number(n), coordsArr, direction];
       });
 
-    console.log(pointingNumbers);
-
     pointingNumbers.some(([n, coords, region]) => {
       let missingPencilMarks = false;
       REGION_DICT[coords[0]][region].forEach((cellCoords) => {
