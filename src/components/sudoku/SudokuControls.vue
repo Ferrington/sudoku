@@ -159,6 +159,10 @@ const digitCounts = computed(() => {
   cursor: pointer;
 }
 
+.digits--button:disabled {
+  cursor: auto;
+}
+
 .digits--button.delete {
   grid-column: 2 / span 2;
 }
@@ -199,4 +203,3 @@ const digitCounts = computed(() => {
   font-size: 1.2rem;
 }
 </style>
-@/constants/constants @/stores/sudoku

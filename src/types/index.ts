@@ -1,6 +1,4 @@
-export type SudokuGrid = {
-  [key: string]: Cell;
-};
+export type SudokuGrid = Record<string, Cell>;
 
 export type Cell = {
   coords: string;
@@ -19,11 +17,7 @@ export type Coords = [number, number];
 
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
-export type RegionDict = {
-  [key: string]: {
-    [key in Region]: string[];
-  };
-};
+export type RegionDict = Record<string, Record<Region, string[]>>;
 
 export type Region = 'row' | 'col' | 'box';
 

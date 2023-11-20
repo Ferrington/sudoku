@@ -37,13 +37,10 @@ export const useSudokuStore = defineStore('sudoku', () => {
 
   function generateSudoku(difficulty: Difficulty) {
     const sudoku = getSudoku(difficulty);
-    // return generateBoardFromString(sudoku.puzzle);
+    return generateBoardFromString(sudoku.puzzle);
     // return generateBoardFromString(
     //   '294513006600842319300697254000056000040080060000470000730164005900735001400928637'
     // );
-    return generateBoardFromString(
-      '000001030231090000065003100678924300103050006000136700009360570006019843300000000'
-    );
   }
 
   function isCorrect() {

@@ -1,6 +1,15 @@
-import { useHintMethods } from '@/composables/hintMethods';
 import type { Hint } from '@/types';
 import { generateBoardFromString } from '@/utils/generateBoard';
+import {
+  eliminateCandidates,
+  hiddenPair,
+  hiddenSingle,
+  hiddenTriple,
+  nakedPair,
+  nakedSingle,
+  nakedTriple,
+  pointingNumbers,
+} from '@/utils/hintMethods';
 import { expect, test } from 'vitest';
 import { ref } from 'vue';
 
@@ -10,7 +19,6 @@ test('can eliminate candidates', () => {
       '000105000140000670080002400063070010900000003010090520007200080026000035000409000'
     )
   );
-  const { eliminateCandidates } = useHintMethods();
   eliminateCandidates(puzzle);
 
   expect(puzzle.value['0,0'].candidates).toEqual(new Set([2, 3, 6, 7]));
@@ -30,7 +38,6 @@ test('can find naked single', () => {
     incorrectCells: [],
     message: '',
   });
-  const { eliminateCandidates, nakedSingle } = useHintMethods();
   eliminateCandidates(puzzle);
   nakedSingle(puzzle, hint);
 
@@ -50,7 +57,6 @@ test('can find hidden single', () => {
     incorrectCells: [],
     message: '',
   });
-  const { eliminateCandidates, hiddenSingle } = useHintMethods();
   eliminateCandidates(puzzle);
   hiddenSingle(puzzle, hint);
 
@@ -70,7 +76,6 @@ test('can find naked pair', () => {
     incorrectCells: [],
     message: '',
   });
-  const { eliminateCandidates, nakedPair } = useHintMethods();
   eliminateCandidates(puzzle);
   nakedPair(puzzle, hint);
 
@@ -92,7 +97,6 @@ test('can find naked triple', () => {
     incorrectCells: [],
     message: '',
   });
-  const { eliminateCandidates, nakedTriple } = useHintMethods();
   eliminateCandidates(puzzle);
   nakedTriple(puzzle, hint);
 
@@ -113,7 +117,6 @@ test('can find hidden pair', () => {
     incorrectCells: [],
     message: '',
   });
-  const { eliminateCandidates, hiddenPair } = useHintMethods();
   eliminateCandidates(puzzle);
   hiddenPair(puzzle, hint);
 
@@ -135,7 +138,6 @@ test('can find hidden triple', () => {
     incorrectCells: [],
     message: '',
   });
-  const { eliminateCandidates, hiddenTriple } = useHintMethods();
   eliminateCandidates(puzzle);
   hiddenTriple(puzzle, hint);
 
@@ -143,4 +145,23 @@ test('can find hidden triple', () => {
   expect(hint.value.secondaryCells).toEqual([]);
   expect(puzzle.value['0,3'].candidates).toEqual(new Set([2, 5, 6]));
   expect(puzzle.value['0,8'].candidates).toEqual(new Set([2, 5]));
+});
+
+test('can find pointing numbers', () => {
+  const puzzle = ref(
+    generateBoardFromString(
+      '017903600000080000900000507072010430000402070064370250701000065000030000005601720'
+    )
+  );
+  const hint = ref<Hint>({
+    primaryCells: [],
+    secondaryCells: [],
+    incorrectCells: [],
+    message: '',
+  });
+  eliminateCandidates(puzzle);
+  pointingNumbers(puzzle, hint);
+
+  expect(puzzle.value['1,2'].candidates).toEqual(new Set([6]));
+  expect(puzzle.value['1,0'].candidates).toEqual(new Set([2, 4, 5, 6]));
 });

@@ -1,5 +1,14 @@
-import { useHintMethods } from '@/composables/hintMethods';
 import type { Hint, SudokuGrid } from '@/types';
+import {
+  eliminateCandidates,
+  hiddenPair,
+  hiddenSingle,
+  hiddenTriple,
+  nakedPair,
+  nakedSingle,
+  nakedTriple,
+  pointingNumbers,
+} from '@/utils/hintMethods';
 import { isComplete } from '@/utils/isComplete';
 import { isCorrect } from '@/utils/isCorrect';
 import { ref, type Ref } from 'vue';
@@ -11,16 +20,6 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
     incorrectCells: [],
     message: '',
   });
-
-  const {
-    eliminateCandidates,
-    nakedSingle,
-    hiddenSingle,
-    nakedPair,
-    nakedTriple,
-    hiddenPair,
-    hiddenTriple,
-  } = useHintMethods();
 
   function getHint() {
     clearHint();
@@ -40,8 +39,9 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       nakedSingle,
       hiddenSingle,
       nakedPair,
-      nakedTriple,
       hiddenPair,
+      pointingNumbers,
+      nakedTriple,
       hiddenTriple,
     ];
 
@@ -58,7 +58,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       primaryCells: [],
       secondaryCells: [],
       incorrectCells: [],
-      message: "Failed to generate a hint. You're on your own",
+      message: "Failed to generate a hint. You're on your own.",
     };
     console.log('!! Failed to generate hint !!');
   }

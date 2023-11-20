@@ -50,7 +50,9 @@ function startImportGame(puzzleString: string) {
     <button type="button" class="button" :disabled="!solutionReady" @click="checkSolution">
       Check Solution
     </button>
-    <button type="button" class="button" @click="getHint">Get Hint</button>
+    <button type="button" class="button" :disabled="!solutionReady" @click="getHint">
+      Get Hint
+    </button>
     <button type="button" class="button" @click="drawCandidates">Draw Candidates</button>
     <p :class="{ wrong: solution.bad, message: true }">{{ solution.message }}</p>
   </div>
