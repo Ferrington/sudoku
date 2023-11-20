@@ -52,7 +52,6 @@ test('can detect conflicting cell value', () => {
   expect(
     performCheckFromCell(puzzle, coordsString, false, (cells: Cell[]) => {
       const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
-      console.log(cell.value, values);
       return values.indexOf(cell.value) !== values.lastIndexOf(cell.value);
     })
   ).toBe(true);
@@ -64,7 +63,6 @@ test('can detect conflicting cell value', () => {
   expect(
     performCheckFromCell(puzzle, coordsString, false, (cells: Cell[]) => {
       const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
-      console.log(cell.value, values);
       return values.indexOf(cell.value) !== values.lastIndexOf(cell.value);
     })
   ).toBe(false);
