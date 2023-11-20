@@ -27,3 +27,7 @@ export type Hint = {
   incorrectCells: string[];
   message: string;
 };
+
+export type CellsForNumber = Record<number, string[]>;
+
+export type CellsForNumberEntry = [number, string[]];

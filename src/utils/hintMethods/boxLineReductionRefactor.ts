@@ -1,15 +1,9 @@
 import { REGION_DICT } from '@/constants';
-import type { Cell, Hint, Region, SudokuGrid } from '@/types';
+import type { Cell, CellsForNumber, CellsForNumberEntry, Hint, Region, SudokuGrid } from '@/types';
 import { performCheck } from '@/utils/performCheck';
 import type { Ref } from 'vue';
 
-type CellsForNumber = Record<number, string[]>;
-
-type CellsForNumberEntry = [number, string[]];
-
 export function boxLineReductionRefactor(sudokuGrid: Ref<SudokuGrid>): Hint | null {
-  let hint: Hint | null = null;
-
   function cellsForEachNumber(cells: Cell[]) {
     return cells.reduce((result, cell) => {
       cell.candidates.forEach((n) => {
@@ -28,8 +22,8 @@ export function boxLineReductionRefactor(sudokuGrid: Ref<SudokuGrid>): Hint | nu
       .map(([n, coordsArr]) => [Number(n), coordsArr]);
   }
 
-  function removePencilMarks(pointingNumbers: CellsForNumberEntry[]) {
-    for (const [n, coords] of pointingNumbers) {
+  function removePencilMarks(boxNumbers: CellsForNumberEntry[]) {
+    for (const [n, coords] of boxNumbers) {
       const missingPencilMarks = removePencilMarksFromBox(n, coords);
 
       if (missingPencilMarks) {
@@ -61,6 +55,8 @@ export function boxLineReductionRefactor(sudokuGrid: Ref<SudokuGrid>): Hint | nu
     return missingPencilMarks;
   }
 
+  let hint: Hint | null = null;
+
   // loop over every row / column
   performCheck(sudokuGrid.value, false, (cells: Cell[], region: Region) => {
     if (region === 'box') return false;
@@ -76,10 +72,10 @@ export function boxLineReductionRefactor(sudokuGrid: Ref<SudokuGrid>): Hint | nu
 
     // keep only numbers where all cells are in the same box
     // these are the targets of this solving method
-    const pointingNumbers = allCellsInBox(numberCells);
+    const boxNumbers = allCellsInBox(numberCells);
 
     // if able to remove pencil marks, assign hint and short circuit
-    return removePencilMarks(pointingNumbers);
+    return removePencilMarks(boxNumbers);
   });
 
   return hint;
