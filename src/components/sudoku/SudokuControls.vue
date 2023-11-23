@@ -2,6 +2,7 @@
 import { BOARD_SIZE } from '@/constants';
 import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
+import Button from 'primevue/button';
 import { computed } from 'vue';
 
 const sudokuStore = useSudokuStore();
@@ -21,105 +22,119 @@ const digitCounts = computed(() => {
 </script>
 
 <template>
-  <div v-if="false">
-    <button
-      type="button"
-      class="time-travel-button"
-      :disabled="cannotUndo"
-      title="Hotkey: Ctrl + z"
-      @click="undo"
-    >
-      Undo
-    </button>
-    <button
-      type="button"
-      class="time-travel-button"
-      :disabled="cannotRedo"
-      title="Hotkey: Ctrl + Shift + z"
-      @click="redo"
-    >
-      Redo
-    </button>
+  <div class="big-wrapper">
+    <div v-if="false">
+      <button
+        type="button"
+        class="time-travel-button"
+        :disabled="cannotUndo"
+        title="Hotkey: Ctrl + z"
+        @click="undo"
+      >
+        Undo
+      </button>
+      <button
+        type="button"
+        class="time-travel-button"
+        :disabled="cannotRedo"
+        title="Hotkey: Ctrl + Shift + z"
+        @click="redo"
+      >
+        Redo
+      </button>
+    </div>
+    <div class="wrapper">
+      <div class="numpad" v-show="activeMenu === 'digit'">
+        <Button
+          class="digits--button"
+          :label="String(i)"
+          severity="secondary"
+          v-for="i in 9"
+          :key="i"
+          :disabled="digitCounts[i] >= BOARD_SIZE"
+          @click="setValueOnSelected(i)"
+        />
+        <Button
+          icon="pi pi-delete-left"
+          severity="secondary"
+          class="digits--button delete"
+          @click="setValueOnSelected(0)"
+        />
+      </div>
+      <div class="numpad" v-show="activeMenu === 'side'">
+        <Button
+          class="digits--button side-button"
+          :label="String(i)"
+          severity="secondary"
+          v-for="i in 9"
+          :disabled="digitCounts[i] >= BOARD_SIZE"
+          :key="i"
+          @click="setValueOnSelected(i)"
+        />
+        <Button
+          icon="pi pi-delete-left"
+          severity="secondary"
+          class="digits--button delete"
+          @click="setValueOnSelected(0)"
+        />
+      </div>
+      <div class="numpad" v-show="activeMenu === 'center'">
+        <Button
+          class="digits--button center-button"
+          :label="String(i)"
+          severity="secondary"
+          v-for="i in 9"
+          :disabled="digitCounts[i] >= BOARD_SIZE"
+          :key="i"
+          @click="setValueOnSelected(i)"
+        />
+        <Button
+          icon="pi pi-delete-left"
+          severity="secondary"
+          class="digits--button delete"
+          @click="setValueOnSelected(0)"
+        />
+      </div>
+      <div class="menu-select">
+        <Button
+          class="menu-select--button"
+          label="Digit"
+          v-tooltip="{ value: 'z', showDelay: 500 }"
+          :severity="activeMenu === 'digit' ? 'primary' : 'secondary'"
+          @click="setActiveMenu('digit')"
+        />
+        <Button
+          class="menu-select--button"
+          label="Side"
+          v-tooltip="{ value: 'x', showDelay: 500 }"
+          :severity="activeMenu === 'side' ? 'primary' : 'secondary'"
+          @click="setActiveMenu('side')"
+        />
+        <Button
+          class="menu-select--button"
+          label="Center"
+          v-tooltip="{ value: 'c', showDelay: 500 }"
+          :severity="activeMenu === 'center' ? 'primary' : 'secondary'"
+          @click="setActiveMenu('center')"
+        />
+      </div>
+    </div>
+    <Button
+      label="Clean Up Pencil Marks"
+      icon="pi pi-pencil"
+      @click="eraseDisqualifiedMarks"
+      severity="secondary"
+      v-tooltip="{ value: '` or .', showDelay: 500 }"
+    />
   </div>
-  <div class="wrapper">
-    <div class="numpad" v-show="activeMenu === 'digit'">
-      <button
-        type="button"
-        class="digits--button"
-        v-for="i in 9"
-        :key="i"
-        :disabled="digitCounts[i] >= BOARD_SIZE"
-        @click="setValueOnSelected(i)"
-      >
-        {{ i }}
-      </button>
-      <button type="button" class="digits--button delete" @click="setValueOnSelected(0)">
-        Clear
-      </button>
-    </div>
-    <div class="numpad" v-show="activeMenu === 'side'">
-      <button
-        type="button"
-        class="digits--button side-button"
-        v-for="i in 9"
-        :disabled="digitCounts[i] >= BOARD_SIZE"
-        :key="i"
-        @click="setValueOnSelected(i)"
-      >
-        {{ i }}
-      </button>
-      <button type="button" class="digits--button delete" @click="setValueOnSelected(0)">
-        Clear
-      </button>
-    </div>
-    <div class="numpad" v-show="activeMenu === 'center'">
-      <button
-        type="button"
-        class="digits--button center-button"
-        v-for="i in 9"
-        :disabled="digitCounts[i] >= BOARD_SIZE"
-        :key="i"
-        @click="setValueOnSelected(i)"
-      >
-        {{ i }}
-      </button>
-      <button type="button" class="digits--button delete" @click="setValueOnSelected(0)">
-        Clear
-      </button>
-    </div>
-    <div class="menu-select">
-      <button
-        type="button"
-        :class="{ 'menu-select--button': true, selected: activeMenu === 'digit' }"
-        title="Hotkey: z"
-        @click="setActiveMenu('digit')"
-      >
-        Digit
-      </button>
-      <button
-        type="button"
-        :class="{ 'menu-select--button': true, selected: activeMenu === 'side' }"
-        title="Hotkey: x"
-        @click="setActiveMenu('side')"
-      >
-        Side
-      </button>
-      <button
-        type="button"
-        :class="{ 'menu-select--button': true, selected: activeMenu === 'center' }"
-        title="Hotkey: c"
-        @click="setActiveMenu('center')"
-      >
-        Center
-      </button>
-    </div>
-  </div>
-  <button class="erase-marks" title="Hotkey: ." @click="eraseDisqualifiedMarks">
-    Remove Disqualified Marks
-  </button>
 </template>
 
 <style scoped>
+.big-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 .time-travel-button {
   padding: 5px 10px;
   font-size: 1.2rem;
@@ -138,7 +153,6 @@ const digitCounts = computed(() => {
 }
 
 .menu-select {
-  width: 60px;
   display: grid;
   grid-template-rows: repeat(3, 60px);
   gap: 2px;
@@ -156,7 +170,6 @@ const digitCounts = computed(() => {
 
 .digits--button {
   font-size: 1.5rem;
-  cursor: pointer;
 }
 
 .digits--button:disabled {
@@ -165,12 +178,22 @@ const digitCounts = computed(() => {
 
 .digits--button.delete {
   grid-column: 2 / span 2;
+  width: 100%;
+}
+
+.digits--button.delete :deep(.pi) {
+  font-size: 1.5rem;
 }
 
 .side-button {
   font-size: 1.1rem;
   display: flex;
   padding: 5px;
+  align-items: flex-start;
+}
+
+:deep(.side-button span) {
+  flex: none;
 }
 
 .side-button:nth-child(3n + 2) {

@@ -9,31 +9,33 @@ import { isCorrect as _isCorrect } from '@/utils/isCorrect';
 import { performCheck } from '@/utils/performCheck';
 import { defineStore } from 'pinia';
 import { getSudoku } from 'sudoku-gen';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export const useSudokuStore = defineStore('sudoku', () => {
   const sudokuGrid = ref<SudokuGrid>({});
+  const difficulty = ref<Difficulty | 'imported'>('easy');
   const history = useHistory(sudokuGrid);
   const selected = useSelected(sudokuGrid);
   const { solvedGrid, solutionReady, solve } = useSolve();
-  const hint = useHint(sudokuGrid, solvedGrid);
+  const { hint, getHint: _getHint, clearHint } = useHint(sudokuGrid, solvedGrid);
 
-  function newGame(difficulty: Difficulty) {
-    hint.clearHint();
+  const formattedDifficulty = computed(() => {
+    return difficulty.value.charAt(0).toUpperCase() + difficulty.value.slice(1);
+  });
+
+  function newGame(diff: Difficulty) {
+    clearHint();
     solutionReady.value = false;
-    const puzzle = generateSudoku(difficulty);
+    const puzzle = generateSudoku(diff);
     sudokuGrid.value = puzzle;
+    difficulty.value = diff;
     solve(puzzle);
   }
 
-  function importGame(puzzleString: string) {
-    try {
-      const puzzle = generateBoardFromString(puzzleString);
-      sudokuGrid.value = puzzle;
-      solve(puzzle);
-    } catch (error) {
-      alert(error);
-    }
+  function importGame(grid: SudokuGrid, solved: SudokuGrid) {
+    sudokuGrid.value = grid;
+    solvedGrid.value = solved;
+    difficulty.value = 'imported';
   }
 
   function generateSudoku(difficulty: Difficulty) {
@@ -62,8 +64,14 @@ export const useSudokuStore = defineStore('sudoku', () => {
     });
   }
 
+  function getHint() {
+    selected.clearSelected();
+    _getHint();
+  }
+
   return {
     sudokuGrid,
+    difficulty: formattedDifficulty,
     solutionReady,
     newGame,
     importGame,
@@ -72,6 +80,8 @@ export const useSudokuStore = defineStore('sudoku', () => {
     eraseDisqualifiedMarks,
     ...history,
     ...selected,
-    ...hint,
+    hint,
+    getHint,
+    clearHint,
   };
 });

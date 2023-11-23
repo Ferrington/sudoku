@@ -82,25 +82,9 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
     };
   }
 
-  function drawCandidates() {
-    if (!isCorrect(sudokuGrid, solvedGrid)) {
-      highlightIncorrectCells();
-      console.log('!! board is wrong !!');
-      return;
-    }
-
-    eliminateCandidates(sudokuGrid);
-
-    Object.entries(sudokuGrid.value).forEach(([coords, cell]) => {
-      cell.pencilMarkType = 'side';
-      cell.pencilMarks = [...sudokuGrid.value[coords].candidates];
-    });
-  }
-
   return {
     hint,
     getHint,
     clearHint,
-    drawCandidates,
   };
 }

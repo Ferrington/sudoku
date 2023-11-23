@@ -21,7 +21,7 @@ const {
 
 <template>
   <div
-    :class="{ cell: true, conflicting: isConflicting }"
+    :class="{ cell: true, conflicting: isConflicting, given: cell.given, digit: !cell.given }"
     @mousedown.exact="setSelected"
     @mousedown.shift="appendSelected"
     @mousedown.ctrl="appendSelected"
@@ -36,7 +36,7 @@ const {
         'incorrect-cell': isIncorrectCell,
       }"
     >
-      <div v-if="cell.value > 0" :class="cell.given ? 'given' : 'digit'">{{ cell.value }}</div>
+      <div v-if="cell.value > 0" class="single-number">{{ cell.value }}</div>
       <div v-else-if="cell.pencilMarkType === 'side'" class="side-marks-wrapper">
         <div v-for="i in 9" :key="i" class="side-marks">
           <span v-show="cell.pencilMarks.includes(i)">
@@ -53,40 +53,52 @@ const {
 
 <style scoped>
 .cell {
-  --highlight-color: rgb(100, 141, 255);
-
-  background: white;
   width: 70px;
   height: 70px;
   font-size: 0.7rem;
   cursor: pointer;
+  border-radius: 5px;
 }
 
-.conflicting :is(.given, .digit) {
-  color: red;
+.conflicting .single-number {
+  color: var(--red-600);
 }
 
 .outline {
   width: 100%;
   height: 100%;
   border: 4px solid transparent;
+  border-radius: 5px;
 }
 
 .selected {
-  border: 4px solid var(--highlight-color);
+  border: 4px solid transparent;
 }
 
-:is(.given, .digit) {
+.digit .selected {
+  background: var(--blue-200);
+}
+
+.given .selected {
+  background: var(--blue-300);
+}
+
+.single-number {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
+  color: var(--bluegray-700);
 }
 
+.given {
+  /* background: #e0e4eb; */
+  background: var(--bluegray-100);
+}
 .digit {
-  color: var(--highlight-color);
+  background: white;
 }
 
 .side-marks-wrapper {
@@ -97,7 +109,7 @@ const {
 }
 
 .side-marks {
-  color: var(--highlight-color);
+  color: var(--bluegray-700);
   font-size: 0.9rem;
   display: flex;
 }
@@ -129,18 +141,18 @@ const {
   align-items: center;
   justify-content: center;
   font-size: v-bind(centerMarksSize);
-  color: var(--highlight-color);
+  color: var(--bluegray-700);
 }
 
 .primary-hint {
-  background: rgb(113, 252, 113) !important;
+  background: var(--green-200);
 }
 
 .secondary-hint {
-  background: rgb(255, 242, 62) !important;
+  background: var(--yellow-200);
 }
 
 .incorrect-cell {
-  background: rgb(255, 196, 196) !important;
+  background: var(--red-200);
 }
 </style>

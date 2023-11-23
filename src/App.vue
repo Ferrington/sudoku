@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import GameMenu from '@/components/menus/GameMenu.vue';
+import HintMenu from '@/components/menus/HintMenu.vue';
 import SudokuControls from '@/components/sudoku/SudokuControls.vue';
 import SudokuGrid from '@/components/sudoku/SudokuGrid.vue';
 import { useGlobalInputs } from '@/composables/globalInputs';
@@ -17,11 +18,15 @@ newGame('easy');
 <template>
   <div class="wrapper">
     <main>
+      <aside class="game-menu">
+        <GameMenu />
+      </aside>
+      <div></div>
       <section>
         <SudokuGrid />
       </section>
-      <aside>
-        <GameMenu />
+      <aside class="control-menu">
+        <HintMenu />
         <SudokuControls />
       </aside>
     </main>
@@ -29,7 +34,7 @@ newGame('easy');
   <div class="hint-message">{{ hint?.message }}</div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .wrapper {
   display: flex;
   justify-content: center;
@@ -38,14 +43,16 @@ newGame('easy');
 
 main {
   padding: 50px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
   gap: 20px;
 }
 
-aside {
+.control-menu {
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  justify-content: space-between;
+  padding-block: 5px;
 }
 
 .hint-message {
