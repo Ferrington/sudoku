@@ -1,17 +1,22 @@
 import { useSelectCell } from '@/composables/selectCell';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { useSudokuStore } from '@/stores/sudoku';
 import type { Cell } from '@/types';
+import { performCheckFromCell } from '@/utils/performCheck';
 import { coordsToString } from '@/utils/utils';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 
 export function useCell(boxNumber: number, cellNumber: number) {
-  const sudokuStore = useSudokuGridStore();
-  const { performCheckFromCell, selectAllWithValue } = sudokuStore;
-  const { sudokuGrid } = storeToRefs(sudokuStore);
+  const sudokuStore = useSudokuStore();
+  const { selectAllWithValue } = sudokuStore;
+  const { sudokuGrid, hint } = storeToRefs(sudokuStore);
 
   const coordsString = computed((): string => getCoordsString());
   const { isSelected, setSelected, appendSelected } = useSelectCell(coordsString.value);
+
+  const isPrimaryHint = computed(() => hint.value?.primaryCells.includes(coordsString.value));
+  const isSecondaryHint = computed(() => hint.value?.secondaryCells.includes(coordsString.value));
+  const isIncorrectCell = computed(() => hint.value?.incorrectCells.includes(coordsString.value));
 
   const cell = computed((): Cell => {
     return sudokuGrid.value[coordsString.value];
@@ -19,9 +24,9 @@ export function useCell(boxNumber: number, cellNumber: number) {
 
   const isConflicting = computed((): Boolean => {
     return (
-      performCheckFromCell(coordsString.value, false, (cells: Cell[]) => {
+      performCheckFromCell(sudokuGrid.value, coordsString.value, false, (cells: Cell[]) => {
         const values = cells.map((cell) => cell.value).filter((val) => val !== 0);
-        return values.indexOf(cell.value.value) === values.lastIndexOf(cell.value.value);
+        return values.indexOf(cell.value.value) !== values.lastIndexOf(cell.value.value);
       }) && !cell.value.given
     );
   });
@@ -44,6 +49,9 @@ export function useCell(boxNumber: number, cellNumber: number) {
     isConflicting,
     isSelected,
     centerMarksSize,
+    isPrimaryHint,
+    isSecondaryHint,
+    isIncorrectCell,
     setSelected: () => setSelected(coordsString.value),
     appendSelected: () => appendSelected(coordsString.value),
     selectAllWithValue: () => selectAllWithValue(cell.value.value),

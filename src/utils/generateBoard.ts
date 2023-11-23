@@ -12,11 +12,15 @@ export function generateBoardFromString(boardString: string): SudokuGrid {
     const y = Math.floor(i / BOARD_SIZE);
     const x = i % BOARD_SIZE;
     const cellValue = Number(n);
-    grid[`${y},${x}`] = {
-      value: isNaN(cellValue) ? 0 : cellValue,
-      given: !isNaN(cellValue),
+    const isGiven = !isNaN(cellValue) && cellValue > 0;
+    const coords = `${y},${x}`;
+    grid[coords] = {
+      coords,
+      value: isGiven ? cellValue : 0,
+      given: isGiven,
       pencilMarks: [],
       pencilMarkType: 'center',
+      candidates: new Set(isGiven ? [] : [1, 2, 3, 4, 5, 6, 7, 8, 9]),
     };
   });
 

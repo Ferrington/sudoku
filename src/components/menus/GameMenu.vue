@@ -2,16 +2,15 @@
 import TheModal from '@/components/base/TheModal.vue';
 import ImportMenu from '@/components/menus/ImportMenu.vue';
 import NewGameMenu from '@/components/menus/NewGameMenu.vue';
-import { useSelectedStore } from '@/stores/selected';
-import { useSudokuGridStore } from '@/stores/sudokuGrid';
+import { useSudokuStore } from '@/stores/sudoku';
 import { storeToRefs } from 'pinia';
 import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { ref } from 'vue';
 
-const sudokuGridStore = useSudokuGridStore();
-const { newGame, importGame, isCorrect, isComplete } = sudokuGridStore;
-const { solutionReady } = storeToRefs(sudokuGridStore);
-const { clearSelected } = useSelectedStore();
+const sudokuStore = useSudokuStore();
+const { newGame, importGame, isCorrect, isComplete, clearSelected, getHint, drawCandidates } =
+  sudokuStore;
+const { solutionReady } = storeToRefs(sudokuStore);
 const showNewGameModal = ref(false);
 const showImportModal = ref(false);
 const solution = ref({
@@ -48,9 +47,13 @@ function startImportGame(puzzleString: string) {
     <button type="button" class="button" @click="showImportModal = true">Import Puzzle</button>
   </div>
   <div>
-    <button type="button" class="check-solution" :disabled="!solutionReady" @click="checkSolution">
+    <button type="button" class="button" :disabled="!solutionReady" @click="checkSolution">
       Check Solution
     </button>
+    <button type="button" class="button" :disabled="!solutionReady" @click="getHint">
+      Get Hint
+    </button>
+    <button type="button" class="button" @click="drawCandidates">Draw Candidates</button>
     <p :class="{ wrong: solution.bad, message: true }">{{ solution.message }}</p>
   </div>
   <TheModal v-if="showNewGameModal" @close="showNewGameModal = false">
@@ -67,7 +70,7 @@ function startImportGame(puzzleString: string) {
   gap: 5px;
 }
 
-:is(.button, .check-solution) {
+.button {
   padding: 5px;
   font-size: 1rem;
 }
@@ -81,3 +84,4 @@ function startImportGame(puzzleString: string) {
   font-size: 1.2rem;
 }
 </style>
+@/stores/sudoku
