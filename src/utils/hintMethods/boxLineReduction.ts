@@ -50,20 +50,25 @@ export function boxLineReduction(sudokuGrid: Ref<SudokuGrid>): Hint | null {
 
   function removePencilMarksFromBox(n: number, coords: string[]) {
     let missingPencilMarks = false;
+    let eliminatedPencilMarks = false;
+    let candidatesDeleted = false;
     REGION_DICT[coords[0]].box.forEach((cellCoords) => {
+      const cell = sudokuGrid.value[cellCoords];
       if (coords.includes(cellCoords)) {
+        if (!cell.pencilMarks.includes(n)) missingPencilMarks = true;
         return;
       }
 
-      const cell = sudokuGrid.value[cellCoords];
-      const candidatesDeleted = cell.candidates.delete(n);
+      if (cell.candidates.delete(n)) {
+        candidatesDeleted = true;
+      }
 
-      if ((candidatesDeleted && cell.pencilMarks.length === 0) || cell.pencilMarks.includes(n)) {
-        missingPencilMarks = true;
+      if (cell.pencilMarks.includes(n)) {
+        eliminatedPencilMarks = true;
       }
     });
 
-    return missingPencilMarks;
+    return eliminatedPencilMarks || (candidatesDeleted && missingPencilMarks);
   }
 
   let hint: Hint | null = null;

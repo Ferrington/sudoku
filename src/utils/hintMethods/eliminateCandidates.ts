@@ -14,7 +14,12 @@ function _eliminateCandidates(sudokuGrid: Ref<SudokuGrid>) {
 
   // loop over every 'given'
   Object.entries(sudokuGrid.value).forEach(([coordsString, cell]) => {
-    if (cell.value === 0) return;
+    if (cell.value === 0) {
+      if (cell.candidates.size === 0) {
+        cell.candidates = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      }
+      return;
+    }
 
     // remove 'given' value from regions occupied by the cell
     Object.values(REGION_DICT[coordsString])

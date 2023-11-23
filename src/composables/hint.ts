@@ -22,7 +22,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
 
     if (!isCorrect(sudokuGrid, solvedGrid)) {
       highlightIncorrectCells();
-      console.log('!! board is wrong !!');
+      console.log('!! Board is wrong !!');
       return;
     } else if (isComplete(sudokuGrid)) {
       return;
@@ -42,12 +42,10 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       hiddenTriple,
     ];
 
-    // for (const method of hintMethods) {
-    //   hint.value = method(sudokuGrid);
-    //   if (hint.value != null) return;
-    // }
-    hint.value = pointingNumbers(sudokuGrid);
-    return;
+    for (const method of hintMethods) {
+      hint.value = method(sudokuGrid);
+      if (hint.value != null) return;
+    }
 
     hint.value = {
       primaryCells: [],
@@ -59,8 +57,6 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
   }
 
   function highlightIncorrectCells() {
-    clearHint();
-
     const incorrectCells: string[] = [];
     Object.entries(solvedGrid.value).forEach(([coordsString, solvedCell]) => {
       const cellValue = sudokuGrid.value[coordsString].value;

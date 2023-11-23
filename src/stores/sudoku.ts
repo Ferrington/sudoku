@@ -8,6 +8,7 @@ import { isComplete as _isComplete } from '@/utils/isComplete';
 import { isCorrect as _isCorrect } from '@/utils/isCorrect';
 import { performCheck } from '@/utils/performCheck';
 import { defineStore } from 'pinia';
+import { getSudoku } from 'sudoku-gen';
 import { ref } from 'vue';
 
 export const useSudokuStore = defineStore('sudoku', () => {
@@ -18,6 +19,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   const hint = useHint(sudokuGrid, solvedGrid);
 
   function newGame(difficulty: Difficulty) {
+    hint.clearHint();
     solutionReady.value = false;
     const puzzle = generateSudoku(difficulty);
     sudokuGrid.value = puzzle;
@@ -35,11 +37,11 @@ export const useSudokuStore = defineStore('sudoku', () => {
   }
 
   function generateSudoku(difficulty: Difficulty) {
-    // const sudoku = getSudoku(difficulty);
-    // return generateBoardFromString(sudoku.puzzle);
-    return generateBoardFromString(
-      '017903600000080000900000507072010430000402070064370250701000065000030000005601720'
-    );
+    const sudoku = getSudoku(difficulty);
+    return generateBoardFromString(sudoku.puzzle);
+    // return generateBoardFromString(
+    //   '078000000400090307090200050000040900003501280000600000205060000000000000000080190'
+    // );
   }
 
   function isCorrect() {

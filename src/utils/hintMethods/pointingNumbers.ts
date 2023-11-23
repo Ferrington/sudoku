@@ -64,18 +64,26 @@ export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>): Hint | null {
 
   function removePencilMarksFromRowOrCol(n: number, coords: string[], region: Region) {
     let missingPencilMarks = false;
+    let eliminatedPencilMarks = false;
+    let candidatesDeleted = false;
     REGION_DICT[coords[0]][region].forEach((cellCoords) => {
-      if (coords.includes(cellCoords)) return;
-
       const cell = sudokuGrid.value[cellCoords];
-      const candidatesDeleted = cell.candidates.delete(n);
 
-      if ((candidatesDeleted && cell.pencilMarks.length === 0) || cell.pencilMarks.includes(n)) {
-        missingPencilMarks = true;
+      if (coords.includes(cellCoords)) {
+        if (!cell.pencilMarks.includes(n)) missingPencilMarks = true;
+        return;
+      }
+
+      if (cell.candidates.delete(n)) {
+        candidatesDeleted = true;
+      }
+
+      if (cell.pencilMarks.includes(n)) {
+        eliminatedPencilMarks = true;
       }
     });
 
-    return missingPencilMarks;
+    return eliminatedPencilMarks || (candidatesDeleted && missingPencilMarks);
   }
 
   // loop over every box
