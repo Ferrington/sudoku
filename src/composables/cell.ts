@@ -14,9 +14,9 @@ export function useCell(boxNumber: number, cellNumber: number) {
   const coordsString = computed((): string => getCoordsString());
   const { isSelected, setSelected, appendSelected } = useSelectCell(coordsString.value);
 
-  const isPrimaryHint = computed(() => hint.value.primaryCells.includes(coordsString.value));
-  const isSecondaryHint = computed(() => hint.value.secondaryCells.includes(coordsString.value));
-  const isIncorrectCell = computed(() => hint.value.incorrectCells.includes(coordsString.value));
+  const isPrimaryHint = computed(() => hint.value?.primaryCells.includes(coordsString.value));
+  const isSecondaryHint = computed(() => hint.value?.secondaryCells.includes(coordsString.value));
+  const isIncorrectCell = computed(() => hint.value?.incorrectCells.includes(coordsString.value));
 
   const cell = computed((): Cell => {
     return sudokuGrid.value[coordsString.value];

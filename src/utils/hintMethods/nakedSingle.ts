@@ -1,24 +1,23 @@
 import type { Cell, Hint, SudokuGrid } from '@/types';
 import type { Ref } from 'vue';
 
-export function nakedSingle(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
-  let placedSingle = false;
-  Object.entries(sudokuGrid.value).some(([coords, cell]) => {
-    if (cell.value !== 0 || cell.candidates.size !== 1) return false;
+export function nakedSingle(sudokuGrid: Ref<SudokuGrid>): Hint | null {
+  // loop through all cells
+  for (const [coords, cell] of Object.entries(sudokuGrid.value)) {
+    // if cell has a single candidate it's a naked single
+    if (cell.value !== 0 || cell.candidates.size !== 1) continue;
 
     updateCell(cell);
 
-    hint.value = {
+    return {
       primaryCells: [coords],
       secondaryCells: [],
       incorrectCells: [],
       message: '[Naked Single] There is only one number that can be placed in this cell.',
     };
+  }
 
-    placedSingle = true;
-    return true;
-  });
-  return placedSingle;
+  return null;
 }
 
 function updateCell(cell: Cell) {

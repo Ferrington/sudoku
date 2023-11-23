@@ -5,59 +5,78 @@ import type { Ref } from 'vue';
 // @ts-ignore
 import comb from 'combinations-generator';
 
-export function hiddenPair(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
-  return hiddenN(sudokuGrid, hint, 2);
+export function hiddenPair(sudokuGrid: Ref<SudokuGrid>): Hint | null {
+  return hiddenN(sudokuGrid, 2);
 }
 
-export function hiddenTriple(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
-  return hiddenN(sudokuGrid, hint, 3);
+export function hiddenTriple(sudokuGrid: Ref<SudokuGrid>): Hint | null {
+  return hiddenN(sudokuGrid, 3);
 }
 
-function hiddenN(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>, n: number) {
-  let foundTriple = false;
-  performCheck(sudokuGrid.value, false, (cells: Cell[]) => {
-    const candidateUnion = cells
+function hiddenN(sudokuGrid: Ref<SudokuGrid>, n: number): Hint | null {
+  function findAllCandidates(cells: Cell[]) {
+    return cells
       .map((cell) => [...cell.candidates])
       .reduce((result, candidates) => {
         return [...new Set([...result, ...candidates])];
       }, []);
-    const allCombos = [...comb(candidateUnion, n)];
-    allCombos.some((combo) => {
+  }
+
+  function eliminateCandidates(matches: Cell[], combo: number[]) {
+    matches.forEach((cell) => {
+      cell.candidates.forEach((n) => {
+        if (!combo.includes(n)) cell.candidates.delete(n);
+      });
+    });
+  }
+
+  function makePencilMarks(matches: Cell[]) {
+    matches.forEach((cell) => {
+      cell.pencilMarkType = 'center';
+      cell.pencilMarks = [...cell.candidates];
+    });
+  }
+
+  let hint = null;
+  performCheck(sudokuGrid.value, false, (cells: Cell[]) => {
+    // get set of all candidates
+    const allCandidates = findAllCandidates(cells);
+
+    /* generate combos of size n for all candidates. 
+      Ex:
+        n = 2
+        Candidates = (1, 4, 6)
+        Combos = [[1, 4], [1, 6], [4, 6]]
+    */
+    const allCombos = [...comb(allCandidates, n)];
+
+    for (const combo of allCombos) {
+      // find all cells with at least one candidate in the combo
       const matches = cells.filter(
         (cell) => cell.value === 0 && [...cell.candidates].some((n) => combo.includes(n))
       );
 
-      if (matches.length != n) return false;
+      // if there are n matches, we've found a hiddenN
+      if (matches.length !== n) continue;
 
       const matchCoords = matches.map((cell) => cell.coords);
-      matches.forEach((cell) => {
-        cell.candidates.forEach((n) => {
-          if (!combo.includes(n)) cell.candidates.delete(n);
-        });
-      });
+      eliminateCandidates(matches, combo);
 
-      if (matches.every((cell) => sameMembers(cell.pencilMarks, [...cell.candidates]))) {
-        return true;
-      } else {
-        matches.forEach((cell) => {
-          cell.pencilMarkType = 'center';
-          cell.pencilMarks = [...cell.candidates];
-        });
-      }
+      // if pencil marks already reflect candidates we don't need to hint
+      if (matches.every((cell) => sameMembers(cell.pencilMarks, [...cell.candidates]))) continue;
+
+      makePencilMarks(matches);
 
       const methodName = n === 2 ? 'Hidden Pair' : 'Hidden Triple';
-
-      hint.value = {
+      hint = {
         primaryCells: matchCoords,
         secondaryCells: [],
         incorrectCells: [],
         message: `[${methodName}] These cells form a ${methodName.toLowerCase()}.`,
       };
-      foundTriple = true;
       return true;
-    });
-    return foundTriple;
+    }
   });
 
-  return foundTriple;
+  return hint;
 }

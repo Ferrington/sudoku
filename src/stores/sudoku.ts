@@ -38,7 +38,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
     // const sudoku = getSudoku(difficulty);
     // return generateBoardFromString(sudoku.puzzle);
     return generateBoardFromString(
-      '016007803092800000870001260048000300650009082039000650060900020080002936924600510'
+      '017903600000080000900000507072010430000402070064370250701000065000030000005601720'
     );
   }
 

@@ -15,12 +15,7 @@ import { isCorrect } from '@/utils/isCorrect';
 import { ref, type Ref } from 'vue';
 
 export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>) {
-  const hint = ref<Hint>({
-    primaryCells: [],
-    secondaryCells: [],
-    incorrectCells: [],
-    message: '',
-  });
+  const hint = ref<Hint | null>();
 
   function getHint() {
     clearHint();
@@ -47,14 +42,12 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       hiddenTriple,
     ];
 
-    const generatedHint = hintMethods.some((method) => {
-      if (method(sudokuGrid, hint)) {
-        console.log(method.name);
-        return true;
-      }
-      return false;
-    });
-    if (generatedHint) return;
+    // for (const method of hintMethods) {
+    //   hint.value = method(sudokuGrid);
+    //   if (hint.value != null) return;
+    // }
+    hint.value = pointingNumbers(sudokuGrid);
+    return;
 
     hint.value = {
       primaryCells: [],
@@ -66,6 +59,8 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
   }
 
   function highlightIncorrectCells() {
+    clearHint();
+
     const incorrectCells: string[] = [];
     Object.entries(solvedGrid.value).forEach(([coordsString, solvedCell]) => {
       const cellValue = sudokuGrid.value[coordsString].value;

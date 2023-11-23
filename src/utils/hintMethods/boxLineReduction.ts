@@ -1,61 +1,93 @@
 import { REGION_DICT } from '@/constants';
-import type { Cell, Hint, Region, SudokuGrid } from '@/types';
+import type { Cell, CellsForNumber, CellsForNumberEntry, Hint, Region, SudokuGrid } from '@/types';
 import { performCheck } from '@/utils/performCheck';
 import type { Ref } from 'vue';
 
-export function boxLineReduction(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
-  let foundPointing = false;
+export function boxLineReduction(sudokuGrid: Ref<SudokuGrid>): Hint | null {
+  function cellsForEachNumber(cells: Cell[]) {
+    return cells.reduce((result, cell) => {
+      cell.candidates.forEach((n) => {
+        if (n in result) result[n].push(cell.coords);
+        else result[n] = [cell.coords];
+      });
+      return result;
+    }, {} as CellsForNumber);
+  }
+
+  function allCellsInBox(numberCells: CellsForNumber): CellsForNumberEntry[] {
+    return Object.entries(numberCells)
+      .filter(([, coordsArr]) => {
+        return coordsArr.every((coords) => REGION_DICT[coordsArr[0]].box.includes(coords));
+      })
+      .map(([n, coordsArr]) => [Number(n), coordsArr]);
+  }
+
+  function removePencilMarks(boxNumbers: CellsForNumberEntry[]) {
+    for (const [n, coords] of boxNumbers) {
+      const missingPencilMarks = removePencilMarksFromBox(n, coords);
+
+      if (missingPencilMarks) {
+        addMissingPrimaryMarks(n, coords);
+        hint = {
+          primaryCells: coords,
+          secondaryCells: REGION_DICT[coords[0]].box.filter((cell) => !coords.includes(cell)),
+          incorrectCells: [],
+          message: `[Box Line Reduction] ${n} can only appear in a single row/column in this box. It can be eliminated from the rest of the box.`,
+        };
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function addMissingPrimaryMarks(n: number, coords: string[]) {
+    coords.forEach((cellCoords) => {
+      const cell = sudokuGrid.value[cellCoords];
+      if (cell.pencilMarks.length === 0) cell.pencilMarkType = 'side';
+      if (!cell.pencilMarks.includes(n)) cell.pencilMarks.push(n);
+    });
+  }
+
+  function removePencilMarksFromBox(n: number, coords: string[]) {
+    let missingPencilMarks = false;
+    REGION_DICT[coords[0]].box.forEach((cellCoords) => {
+      if (coords.includes(cellCoords)) {
+        return;
+      }
+
+      const cell = sudokuGrid.value[cellCoords];
+      const candidatesDeleted = cell.candidates.delete(n);
+
+      if ((candidatesDeleted && cell.pencilMarks.length === 0) || cell.pencilMarks.includes(n)) {
+        missingPencilMarks = true;
+      }
+    });
+
+    return missingPencilMarks;
+  }
+
+  let hint: Hint | null = null;
+
+  // loop over every row / column
   performCheck(sudokuGrid.value, false, (cells: Cell[], region: Region) => {
     if (region === 'box') return false;
 
-    const numberCells = cells.reduce(
-      (result, cell) => {
-        cell.candidates.forEach((n) => {
-          if (n in result) result[n].push(cell.coords);
-          else result[n] = [cell.coords];
-        });
-        return result;
-      },
-      {} as Record<number, string[]>
-    );
-
-    const pointingNumbers = Object.entries(numberCells)
-      .filter(([, coordsArr]) => {
-        return coordsArr.every((y) => REGION_DICT[coordsArr[0]].box.includes(y));
-      })
-      .map(([n, coordsArr]): [number, string[], Region] => {
-        const direction = 'box';
-        return [Number(n), coordsArr, direction];
-      });
-
-    pointingNumbers.some(([n, coords, region]) => {
-      let missingPencilMarks = false;
-      REGION_DICT[coords[0]][region].forEach((cellCoords) => {
-        if (coords.includes(cellCoords)) return;
-
-        const cell = sudokuGrid.value[cellCoords];
-        cell.candidates.delete(n);
-
-        if (cell.pencilMarks.includes(n)) {
-          missingPencilMarks = true;
+    /*  get list of cells for each number
+        {
+          1: ['0,0', '0,1'],
+          2: ['0,0', '0,4', '0,5'],
+          ...
         }
-      });
+    */
+    const numberCells = cellsForEachNumber(cells);
 
-      if (missingPencilMarks) {
-        foundPointing = true;
-        hint.value = {
-          primaryCells: coords,
-          secondaryCells: REGION_DICT[coords[0]][region].filter((cell) => !coords.includes(cell)),
-          incorrectCells: [],
-          message: `[Box Line Reduction] ${n} can only appear in a single row/column in this box. They can be eliminated from the rest of the ${region}.`,
-        };
-      }
+    // keep only numbers where all cells are in the same box
+    // these are the targets of this solving method
+    const boxNumbers = allCellsInBox(numberCells);
 
-      return missingPencilMarks;
-    });
-
-    return foundPointing;
+    // if able to remove pencil marks, assign hint and short circuit
+    return removePencilMarks(boxNumbers);
   });
 
-  return foundPointing;
+  return hint;
 }

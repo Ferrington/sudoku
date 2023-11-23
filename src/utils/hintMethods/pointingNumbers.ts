@@ -4,12 +4,11 @@ import { performCheck } from '@/utils/performCheck';
 import { coordsToString, stringToCoords } from '@/utils/utils';
 import type { Ref } from 'vue';
 
-export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
-  let foundPointing = false;
-  performCheck(sudokuGrid.value, false, (cells: Cell[], region: Region) => {
-    if (region !== 'box') return false;
+export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>): Hint | null {
+  let hint: Hint | null = null;
 
-    const numberCells = cells.reduce(
+  function cellsForEachNumber(cells: Cell[]) {
+    return cells.reduce(
       (result, cell) => {
         cell.candidates.forEach((n) => {
           if (n in result) result[n].push(stringToCoords(cell.coords));
@@ -17,10 +16,12 @@ export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
         });
         return result;
       },
-      {} as { [key: number]: Coords[] }
+      {} as Record<number, Coords[]>
     );
+  }
 
-    const pointingNumbers = Object.entries(numberCells)
+  function allCellsInRowOrCol(numberCells: Record<number, Coords[]>) {
+    return Object.entries(numberCells)
       .filter(([, coordsArr]) => {
         return (
           coordsArr.every(([y]) => y === coordsArr[0][0]) ||
@@ -32,35 +33,70 @@ export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>, hint: Ref<Hint>) {
         const coords = coordsArr.map(([y, x]) => coordsToString(y, x));
         return [Number(n), coords, direction];
       });
+  }
 
-    pointingNumbers.some(([n, coords, region]) => {
-      let missingPencilMarks = false;
-      REGION_DICT[coords[0]][region].forEach((cellCoords) => {
-        if (coords.includes(cellCoords)) return;
-
-        const cell = sudokuGrid.value[cellCoords];
-        cell.candidates.delete(n);
-
-        if (cell.pencilMarks.includes(n)) {
-          missingPencilMarks = true;
-        }
-      });
+  function removePencilMarks(pointingNumbers: [number, string[], Region][]) {
+    for (const [n, coords, region] of pointingNumbers) {
+      const missingPencilMarks = removePencilMarksFromRowOrCol(n, coords, region);
 
       if (missingPencilMarks) {
-        foundPointing = true;
-        hint.value = {
+        addMissingPrimaryMarks(n, coords);
+        hint = {
           primaryCells: coords,
           secondaryCells: REGION_DICT[coords[0]][region].filter((cell) => !coords.includes(cell)),
           incorrectCells: [],
-          message: `[Pointing Numbers] ${n} can only appear in a single ${region} in this box. They can be eliminated from the rest of the ${region}.`,
+          message: `[Pointing Numbers] ${n} can only appear in a single ${region} in this box. It can be eliminated from the rest of the ${region}.`,
         };
+        return true;
       }
+    }
 
-      return missingPencilMarks;
+    return false;
+  }
+
+  function addMissingPrimaryMarks(n: number, coords: string[]) {
+    coords.forEach((cellCoords) => {
+      const cell = sudokuGrid.value[cellCoords];
+      if (cell.pencilMarks.length === 0) cell.pencilMarkType = 'side';
+      if (!cell.pencilMarks.includes(n)) cell.pencilMarks.push(n);
+    });
+  }
+
+  function removePencilMarksFromRowOrCol(n: number, coords: string[], region: Region) {
+    let missingPencilMarks = false;
+    REGION_DICT[coords[0]][region].forEach((cellCoords) => {
+      if (coords.includes(cellCoords)) return;
+
+      const cell = sudokuGrid.value[cellCoords];
+      const candidatesDeleted = cell.candidates.delete(n);
+
+      if ((candidatesDeleted && cell.pencilMarks.length === 0) || cell.pencilMarks.includes(n)) {
+        missingPencilMarks = true;
+      }
     });
 
-    return foundPointing;
+    return missingPencilMarks;
+  }
+
+  // loop over every box
+  performCheck(sudokuGrid.value, false, (cells: Cell[], region: Region) => {
+    if (region !== 'box') return false;
+
+    /*  get list of cells for each number
+        {
+          1: ['0,0', '0,1'],
+          2: ['0,0', '0,4', '0,5'],
+          ...
+        }
+    */
+    const numberCells = cellsForEachNumber(cells);
+
+    // keep only numbers where all cells are in the same row / col
+    // these are the targets of this solving method
+    const pointingNumbers = allCellsInRowOrCol(numberCells);
+
+    return removePencilMarks(pointingNumbers);
   });
 
-  return foundPointing;
+  return hint;
 }

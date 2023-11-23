@@ -26,7 +26,7 @@ newGame('easy');
       </aside>
     </main>
   </div>
-  <div class="hint-message">{{ hint.message }}</div>
+  <div class="hint-message">{{ hint?.message }}</div>
 </template>
 
 <style scoped>
