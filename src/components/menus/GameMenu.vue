@@ -63,8 +63,6 @@ function checkSolution() {
           {{ difficulty }}
         </div>
       </div>
-      <!-- <button type="button" class="button" @click="showNewGameModal = true">New Game</button> -->
-      <!-- <button type="button" class="button" @click="showImportModal = true">Import Puzzle</button> -->
       <div class="check-wrapper">
         <InlineMessage
           v-show="solution.message"
@@ -90,7 +88,7 @@ function checkSolution() {
       </div>
     </div>
 
-    <Dialog v-model:visible="showModal" modal dismissable-mask header="New Game">
+    <Dialog v-model:visible="showModal" position="top" modal dismissable-mask header="New Game">
       <NewGameMenu @new-game="startNewGame" @import-game="startImportGame" />
     </Dialog>
   </div>
