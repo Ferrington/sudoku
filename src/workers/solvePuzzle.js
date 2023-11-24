@@ -7,6 +7,7 @@ onmessage = function (e) {
     const solvedPuzzle = solvePuzzle(e.data);
     postMessage(solvedPuzzle);
   } catch (err) {
+    postMessage('error');
     console.log(err);
   }
 };

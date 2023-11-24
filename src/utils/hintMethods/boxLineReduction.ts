@@ -32,7 +32,8 @@ export function boxLineReduction(sudokuGrid: Ref<SudokuGrid>): Hint | null {
           primaryCells: coords,
           secondaryCells: REGION_DICT[coords[0]].box.filter((cell) => !coords.includes(cell)),
           incorrectCells: [],
-          message: `[Box Line Reduction] ${n} can only appear in a single row/column in this box. It can be eliminated from the rest of the box.`,
+          heading: 'Box Line Reduction',
+          message: `${n} can only appear in a single row/column in this box. It can be eliminated from the rest of the box.`,
         };
         return true;
       }

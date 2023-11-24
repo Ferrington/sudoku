@@ -72,7 +72,8 @@ function hiddenN(sudokuGrid: Ref<SudokuGrid>, n: number): Hint | null {
         primaryCells: matchCoords,
         secondaryCells: [],
         incorrectCells: [],
-        message: `[${methodName}] These cells form a ${methodName.toLowerCase()}.`,
+        heading: methodName,
+        message: `These cells form a ${methodName.toLowerCase()}.`,
       };
       return true;
     }

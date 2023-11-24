@@ -51,6 +51,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       primaryCells: [],
       secondaryCells: [],
       incorrectCells: [],
+      heading: 'Uh oh!',
       message: "Failed to generate a hint. You're on your own.",
     };
     console.log('!! Failed to generate hint !!');
@@ -69,6 +70,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       primaryCells: [],
       secondaryCells: [],
       incorrectCells,
+      heading: 'Mistake In Puzzle',
       message: `${incorrectCells.length > 1 ? 'Cells are' : 'A cell is'} incorrect.`,
     };
   }
@@ -78,29 +80,14 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       primaryCells: [],
       secondaryCells: [],
       incorrectCells: [],
+      heading: '',
       message: '',
     };
-  }
-
-  function drawCandidates() {
-    if (!isCorrect(sudokuGrid, solvedGrid)) {
-      highlightIncorrectCells();
-      console.log('!! board is wrong !!');
-      return;
-    }
-
-    eliminateCandidates(sudokuGrid);
-
-    Object.entries(sudokuGrid.value).forEach(([coords, cell]) => {
-      cell.pencilMarkType = 'side';
-      cell.pencilMarks = [...sudokuGrid.value[coords].candidates];
-    });
   }
 
   return {
     hint,
     getHint,
     clearHint,
-    drawCandidates,
   };
 }

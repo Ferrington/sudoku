@@ -13,7 +13,8 @@ export function nakedSingle(sudokuGrid: Ref<SudokuGrid>): Hint | null {
       primaryCells: [coords],
       secondaryCells: [],
       incorrectCells: [],
-      message: '[Naked Single] There is only one number that can be placed in this cell.',
+      heading: 'Naked Single',
+      message: 'There is only one number that can be placed in this cell.',
     };
   }
 

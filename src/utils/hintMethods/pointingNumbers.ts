@@ -45,7 +45,12 @@ export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>): Hint | null {
           primaryCells: coords,
           secondaryCells: REGION_DICT[coords[0]][region].filter((cell) => !coords.includes(cell)),
           incorrectCells: [],
-          message: `[Pointing Numbers] ${n} can only appear in a single ${region} in this box. It can be eliminated from the rest of the ${region}.`,
+          heading: 'Pointing Numbers',
+          message: `${n} can only appear in a single ${
+            region === 'col' ? 'column' : region
+          } in this box. It can be eliminated from the rest of the ${
+            region === 'col' ? 'column' : region
+          }.`,
         };
         return true;
       }

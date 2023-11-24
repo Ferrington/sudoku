@@ -23,8 +23,9 @@ const { sudokuGrid } = storeToRefs(sudokuStore);
 <style scoped>
 .board {
   display: inline-block;
-  background: black;
+  background: #4a5666;
   user-select: none;
+  border-radius: 8px;
 }
 .board-wrapper {
   display: grid;
@@ -39,4 +40,3 @@ const { sudokuGrid } = storeToRefs(sudokuStore);
   gap: 1px;
 }
 </style>
-@/constants/constants @/stores/sudoku

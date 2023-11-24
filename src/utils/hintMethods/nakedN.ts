@@ -91,7 +91,8 @@ function nakedN(sudokuGrid: Ref<SudokuGrid>, n: number): Hint | null {
         primaryCells: matchCoords,
         secondaryCells: secondaryCoords,
         incorrectCells: [],
-        message: `[${methodName}] These cells form a ${methodName.toLowerCase()}. You can eliminate their values from the highlighted regions.`,
+        heading: methodName,
+        message: `These cells form a ${methodName.toLowerCase()}. You can eliminate their values from the highlighted regions.`,
       };
       return true;
     }

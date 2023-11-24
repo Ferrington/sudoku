@@ -22,7 +22,10 @@ export function hiddenSingle(sudokuGrid: Ref<SudokuGrid>): Hint | null {
           .filter((cell) => cell.coords != cellWithSingle!.coords && cell.value === 0)
           .map((cell) => cell.coords),
         incorrectCells: [],
-        message: `[Hidden Single] This cell's value cannot be placed anywhere else in the ${region}.`,
+        heading: 'Hidden Single',
+        message: `This cell's value cannot be placed anywhere else in the ${
+          region === 'col' ? 'column' : region
+        }.`,
       };
     }
 

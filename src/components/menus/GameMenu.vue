@@ -1,87 +1,129 @@
 <script setup lang="ts">
-import TheModal from '@/components/base/TheModal.vue';
-import ImportMenu from '@/components/menus/ImportMenu.vue';
 import NewGameMenu from '@/components/menus/NewGameMenu.vue';
 import { useSudokuStore } from '@/stores/sudoku';
+import type { SudokuGrid } from '@/types';
 import { storeToRefs } from 'pinia';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InlineMessage from 'primevue/inlinemessage';
 import { type Difficulty } from 'sudoku-gen/dist/types/difficulty.type';
 import { ref } from 'vue';
 
+type Solution = {
+  message: string;
+  severity: 'warn' | 'info' | 'success';
+  timer: number | undefined;
+};
+
 const sudokuStore = useSudokuStore();
-const { newGame, importGame, isCorrect, isComplete, clearSelected, getHint, drawCandidates } =
-  sudokuStore;
-const { solutionReady } = storeToRefs(sudokuStore);
-const showNewGameModal = ref(false);
-const showImportModal = ref(false);
-const solution = ref({
+const { newGame, importGame, isCorrect, isComplete, clearSelected } = sudokuStore;
+const { difficulty } = storeToRefs(sudokuStore);
+const showModal = ref(false);
+const solution = ref<Solution>({
   message: '',
-  bad: false,
+  severity: 'info',
+  timer: undefined,
 });
+
+function startNewGame(diff: Difficulty) {
+  clearSelected();
+  showModal.value = false;
+  newGame(diff);
+}
+
+function startImportGame(sudoduGrid: SudokuGrid, solvedGrid: SudokuGrid) {
+  clearSelected();
+  showModal.value = false;
+  importGame(sudoduGrid, solvedGrid);
+}
 
 function checkSolution() {
   if (!isCorrect()) {
-    solution.value.message = "Something isn't quite right =\\";
-    solution.value.bad = true;
-    return;
+    solution.value.message = "Something isn't quite right.";
+    solution.value.severity = 'warn';
+  } else {
+    const completed = isComplete();
+    solution.value.message = completed ? 'Puzzle Completed!' : 'Looks good so far!';
+    solution.value.severity = completed ? 'success' : 'info';
   }
-  solution.value.message = isComplete() ? 'Puzzle Completed! Nice work!' : 'Looks good so far!';
-  solution.value.bad = false;
-}
 
-function startNewGame(difficulty: Difficulty) {
-  clearSelected();
-  showNewGameModal.value = false;
-  newGame(difficulty);
-}
+  window.clearTimeout(solution.value.timer);
 
-function startImportGame(puzzleString: string) {
-  clearSelected();
-  importGame(puzzleString);
-  showImportModal.value = false;
+  solution.value.timer = window.setTimeout(() => {
+    solution.value.message = '';
+  }, 5000);
 }
 </script>
 
 <template>
-  <div class="wrapper">
-    <button type="button" class="button" @click="showNewGameModal = true">New Game</button>
-    <button type="button" class="button" @click="showImportModal = true">Import Puzzle</button>
-  </div>
   <div>
-    <button type="button" class="button" :disabled="!solutionReady" @click="checkSolution">
-      Check Solution
-    </button>
-    <button type="button" class="button" :disabled="!solutionReady" @click="getHint">
-      Get Hint
-    </button>
-    <button type="button" class="button" @click="drawCandidates">Draw Candidates</button>
-    <p :class="{ wrong: solution.bad, message: true }">{{ solution.message }}</p>
+    <div class="wrapper">
+      <div class="new-game-wrapper">
+        <div class="difficulty">
+          {{ difficulty }}
+        </div>
+      </div>
+      <!-- <button type="button" class="button" @click="showNewGameModal = true">New Game</button> -->
+      <!-- <button type="button" class="button" @click="showImportModal = true">Import Puzzle</button> -->
+      <div class="check-wrapper">
+        <InlineMessage
+          v-show="solution.message"
+          class="inline-message"
+          :severity="solution.severity"
+          >{{ solution.message }}</InlineMessage
+        >
+        <Button
+          label="Check"
+          icon="pi pi-check"
+          icon-pos="right"
+          size="small"
+          severity="secondary"
+          @click="checkSolution"
+        />
+        <Button
+          label="New Game"
+          icon="pi pi-plus"
+          icon-pos="right"
+          size="small"
+          @click="showModal = true"
+        />
+      </div>
+    </div>
+
+    <Dialog v-model:visible="showModal" modal dismissable-mask header="New Game">
+      <NewGameMenu @new-game="startNewGame" @import-game="startImportGame" />
+    </Dialog>
   </div>
-  <TheModal v-if="showNewGameModal" @close="showNewGameModal = false">
-    <NewGameMenu @new-game="startNewGame" />
-  </TheModal>
-  <TheModal v-if="showImportModal" @close="showImportModal = false">
-    <ImportMenu @new-game="startImportGame" />
-  </TheModal>
 </template>
 
 <style scoped>
 .wrapper {
   display: flex;
-  gap: 5px;
+  justify-content: space-between;
+  padding-inline: 5px;
 }
 
-.button {
-  padding: 5px;
-  font-size: 1rem;
+.check-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
 }
 
-.wrong {
-  color: red;
+.inline-message {
+  height: 38px;
 }
 
-.message {
-  margin-top: 5px;
-  font-size: 1.2rem;
+.new-game-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.difficulty {
+  position: relative;
+  top: 2px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--bluegray-700);
 }
 </style>
-@/stores/sudoku
