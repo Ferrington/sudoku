@@ -3,8 +3,8 @@ import { ref } from 'vue';
 
 export type SolutionStatus = 'solved' | 'solving' | 'failed';
 
-export function useSolve() {
-  const worker = new Worker(new URL('@/workers/solvePuzzle.js', import.meta.url), {
+export function useSolveNew() {
+  const worker = new Worker(new URL('@/workers/solvePuzzleNew.ts', import.meta.url), {
     type: 'module',
   });
   const solvedGrid = ref<SudokuGrid>({});

@@ -6,7 +6,7 @@ import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import InlineMessage from 'primevue/inlinemessage';
 import InputText from 'primevue/inputtext';
-import { ref, toRaw, watch } from 'vue';
+import { onUnmounted, ref, toRaw, watch } from 'vue';
 
 defineEmits(['newGame', 'importGame']);
 
@@ -14,7 +14,8 @@ const importTooltip =
   'A valid import string is 81 characters long. ' +
   'Any non-numeric character or 0 can be used for blank cells.\n ' +
   "Ex:\n '_1_23_...'\n '010230...'";
-const { solvedGrid, solutionStatus, solve } = useSolve();
+const { solvedGrid, solutionStatus, solve, terminateWorker } = useSolve();
+
 const sudokuGrid = ref<SudokuGrid>();
 const puzzleString = ref('');
 const checkingImport = ref(false);
@@ -52,6 +53,8 @@ watch(solutionStatus, (solutionStatus) => {
     checkingImport.value = false;
   }
 });
+
+onUnmounted(terminateWorker);
 </script>
 
 <template>
