@@ -1,6 +1,6 @@
 import DemoView from '@/views/DemoView.vue';
 import GameView from '@/views/GameView.vue';
-import { createRouter as _createRouter, createWebHistory } from 'vue-router';
+import { createRouter as _createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
   { path: '/', name: 'game', component: GameView },
@@ -9,7 +9,7 @@ const routes = [
 
 export function createRouter() {
   return _createRouter({
-    history: createWebHistory('/sudoku/'),
+    history: createWebHashHistory('/sudoku/'),
     routes,
   });
 }
