@@ -5,3 +5,4 @@ export * from './hiddenSingle';
 export * from './nakedN';
 export * from './nakedSingle';
 export * from './pointingNumbers';
+export * from './xWing';

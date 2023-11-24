@@ -9,6 +9,7 @@ import {
   nakedSingle,
   nakedTriple,
   pointingNumbers,
+  xWing,
 } from '@/utils/hintMethods';
 import { isComplete } from '@/utils/isComplete';
 import { isCorrect } from '@/utils/isCorrect';
@@ -40,12 +41,15 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       boxLineReduction,
       nakedTriple,
       hiddenTriple,
+      xWing,
     ];
 
-    for (const method of hintMethods) {
-      hint.value = method(sudokuGrid);
-      if (hint.value != null) return;
-    }
+    // for (const method of hintMethods) {
+    //   hint.value = method(sudokuGrid);
+    //   if (hint.value != null) return;
+    // }
+    xWing(sudokuGrid);
+    return;
 
     hint.value = {
       primaryCells: [],

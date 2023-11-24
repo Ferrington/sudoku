@@ -8,7 +8,6 @@ import { isComplete as _isComplete } from '@/utils/isComplete';
 import { isCorrect as _isCorrect } from '@/utils/isCorrect';
 import { performCheck } from '@/utils/performCheck';
 import { defineStore } from 'pinia';
-import { getSudoku } from 'sudoku-gen';
 import { computed, ref } from 'vue';
 
 export const useSudokuStore = defineStore('sudoku', () => {
@@ -16,7 +15,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   const difficulty = ref<Difficulty | 'imported'>('easy');
   const history = useHistory(sudokuGrid);
   const selected = useSelected(sudokuGrid);
-  const { solvedGrid } = useSolve();
+  const { solvedGrid, solve } = useSolve();
   const { hint, getHint: _getHint, clearHint } = useHint(sudokuGrid, solvedGrid);
 
   const formattedDifficulty = computed(() => {
@@ -25,10 +24,17 @@ export const useSudokuStore = defineStore('sudoku', () => {
 
   function newGame(diff: Difficulty) {
     clearHint();
-    const sudoku = getSudoku(diff);
-    sudokuGrid.value = generateBoardFromString(sudoku.puzzle);
-    solvedGrid.value = generateBoardFromString(sudoku.solution);
-    difficulty.value = diff;
+    // const sudoku = getSudoku(diff);
+    // sudokuGrid.value = generateBoardFromString(sudoku.puzzle);
+    // solvedGrid.value = generateBoardFromString(sudoku.solution);
+    // difficulty.value = diff;
+
+    const puzzle = generateBoardFromString(
+      '100000569492056108056109240009640801064010000218035604040500016905061402621000005'
+    );
+    sudokuGrid.value = puzzle;
+    solve(puzzle);
+    difficulty.value = 'imported';
   }
 
   function importGame(grid: SudokuGrid, solved: SudokuGrid) {
