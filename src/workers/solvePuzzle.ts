@@ -22,18 +22,16 @@ export function solvePuzzle(grid: SudokuGrid) {
     .sort((a, b) => a.candidates.length - b.candidates.length)
     .map((cell) => cell.coords);
 
-  function depthFirstSolve(grid: SudokuGrid): SudokuGrid | undefined {
-    grid = structuredClone(grid);
-    const coordsString = order.find((cellCoords) => grid[cellCoords].value === 0);
-    if (coordsString == null) return grid;
+  function depthFirstSolve(coords: string | undefined): boolean {
+    if (coords == null) return true;
 
-    const candidates = findCandidates(coordsString, grid);
+    const candidates = findCandidates(coords, grid);
     for (const candidate of candidates) {
-      grid[coordsString].value = candidate;
-
-      const result = depthFirstSolve(grid);
-      if (result != null) return result;
+      grid[coords].value = candidate;
+      if (depthFirstSolve(order[order.indexOf(coords) + 1])) return true;
+      grid[coords].value = 0;
     }
+    return false;
   }
 
   function findCandidates(coordsString: string, grid: SudokuGrid) {
@@ -49,7 +47,6 @@ export function solvePuzzle(grid: SudokuGrid) {
     return candidates.filter((candidate) => !existing.has(candidate));
   }
 
-  const solved = depthFirstSolve(grid);
-  if (solved == null) throw new Error('unable to solve');
-  return solved;
+  if (!depthFirstSolve(order[0])) throw new Error('unable to solve');
+  return structuredClone(grid);
 }
