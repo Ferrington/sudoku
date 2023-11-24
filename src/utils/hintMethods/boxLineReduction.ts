@@ -33,6 +33,7 @@ export function boxLineReduction(sudokuGrid: Ref<SudokuGrid>): Hint | null {
           secondaryCells: REGION_DICT[coords[0]].box.filter((cell) => !coords.includes(cell)),
           incorrectCells: [],
           heading: 'Box Line Reduction',
+          href: 'https://www.sudopedia.org/wiki/Locked_Candidates',
           message: `${n} can only appear in a single row/column in this box. It can be eliminated from the rest of the box.`,
         };
         return true;

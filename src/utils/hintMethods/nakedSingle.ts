@@ -14,6 +14,7 @@ export function nakedSingle(sudokuGrid: Ref<SudokuGrid>): Hint | null {
       secondaryCells: [],
       incorrectCells: [],
       heading: 'Naked Single',
+      href: 'https://www.sudopedia.org/wiki/Naked_Single',
       message: 'There is only one number that can be placed in this cell.',
     };
   }

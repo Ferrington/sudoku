@@ -87,11 +87,16 @@ function nakedN(sudokuGrid: Ref<SudokuGrid>, n: number): Hint | null {
       makePencilMarks(matches);
 
       const methodName = n === 2 ? 'Naked Pair' : 'Naked Triple';
+      const methodHref =
+        n === 2
+          ? 'https://www.sudopedia.org/wiki/Naked_Pair'
+          : 'https://www.sudopedia.org/wiki/Naked_Triple';
       hint = {
         primaryCells: matchCoords,
         secondaryCells: secondaryCoords,
         incorrectCells: [],
         heading: methodName,
+        href: methodHref,
         message: `These cells form a ${methodName.toLowerCase()}. You can eliminate their values from the highlighted regions.`,
       };
       return true;

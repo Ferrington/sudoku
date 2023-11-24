@@ -46,6 +46,7 @@ export function pointingNumbers(sudokuGrid: Ref<SudokuGrid>): Hint | null {
           secondaryCells: REGION_DICT[coords[0]][region].filter((cell) => !coords.includes(cell)),
           incorrectCells: [],
           heading: 'Pointing Numbers',
+          href: 'https://www.sudopedia.org/wiki/Locked_Candidates',
           message: `${n} can only appear in a single ${
             region === 'col' ? 'column' : region
           } in this box. It can be eliminated from the rest of the ${

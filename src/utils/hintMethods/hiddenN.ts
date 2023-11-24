@@ -68,11 +68,16 @@ function hiddenN(sudokuGrid: Ref<SudokuGrid>, n: number): Hint | null {
       makePencilMarks(matches);
 
       const methodName = n === 2 ? 'Hidden Pair' : 'Hidden Triple';
+      const methodHref =
+        n === 2
+          ? 'https://www.sudopedia.org/wiki/Hidden_Pair'
+          : 'https://www.sudopedia.org/wiki/Hidden_Triple';
       hint = {
         primaryCells: matchCoords,
         secondaryCells: [],
         incorrectCells: [],
         heading: methodName,
+        href: methodHref,
         message: `These cells form a ${methodName.toLowerCase()}.`,
       };
       return true;

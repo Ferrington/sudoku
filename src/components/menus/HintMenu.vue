@@ -19,7 +19,10 @@ const { hint } = storeToRefs(sudokuStore);
       @click="getHint"
       icon-pos="right"
     />
-    <Fieldset v-show="hint?.message" class="hint" :legend="hint?.heading">
+    <Fieldset v-show="hint?.message" class="hint">
+      <template #legend>
+        <a class="hint-link" :href="hint?.href" target="_blank">{{ hint?.heading }}</a>
+      </template>
       {{ hint?.message }}
       <Button icon="pi pi-times" class="close-hint" text rounded size="small" @click="clearHint" />
     </Fieldset>
@@ -48,5 +51,9 @@ const { hint } = storeToRefs(sudokuStore);
   height: 30px;
   padding: 0;
   color: var(--bluegray-700);
+}
+
+.hint-link {
+  color: var(--primary-color-text);
 }
 </style>

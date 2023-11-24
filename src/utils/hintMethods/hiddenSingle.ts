@@ -23,6 +23,7 @@ export function hiddenSingle(sudokuGrid: Ref<SudokuGrid>): Hint | null {
           .map((cell) => cell.coords),
         incorrectCells: [],
         heading: 'Hidden Single',
+        href: 'https://www.sudopedia.org/wiki/Hidden_Single',
         message: `This cell's value cannot be placed anywhere else in the ${
           region === 'col' ? 'column' : region
         }.`,
