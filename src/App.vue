@@ -6,7 +6,6 @@ const route = useRoute();
 
 <template>
   <RouterView />
-  {{ route }}
 </template>
 
 <style scoped lang="scss"></style>
