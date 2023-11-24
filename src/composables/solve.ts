@@ -8,7 +8,6 @@ export function useSolve() {
     type: 'module',
   });
   const solvedGrid = ref<SudokuGrid>({});
-  const solutionReady = ref(false);
   const solutionStatus = ref<SolutionStatus>();
 
   function solve(puzzle: SudokuGrid) {
@@ -22,14 +21,12 @@ export function useSolve() {
       return;
     }
     solvedGrid.value = e.data;
-    solutionReady.value = true;
     solutionStatus.value = 'solved';
     console.log('Puzzle Solved!');
   };
 
   return {
     solvedGrid,
-    solutionReady,
     solutionStatus,
     solve,
   };

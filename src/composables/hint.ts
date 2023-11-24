@@ -51,6 +51,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       primaryCells: [],
       secondaryCells: [],
       incorrectCells: [],
+      heading: 'Uh oh!',
       message: "Failed to generate a hint. You're on your own.",
     };
     console.log('!! Failed to generate hint !!');
@@ -69,6 +70,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       primaryCells: [],
       secondaryCells: [],
       incorrectCells,
+      heading: 'Mistake In Puzzle',
       message: `${incorrectCells.length > 1 ? 'Cells are' : 'A cell is'} incorrect.`,
     };
   }
@@ -78,6 +80,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
       primaryCells: [],
       secondaryCells: [],
       incorrectCells: [],
+      heading: '',
       message: '',
     };
   }

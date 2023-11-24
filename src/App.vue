@@ -5,11 +5,9 @@ import SudokuControls from '@/components/sudoku/SudokuControls.vue';
 import SudokuGrid from '@/components/sudoku/SudokuGrid.vue';
 import { useGlobalInputs } from '@/composables/globalInputs';
 import { useSudokuStore } from '@/stores/sudoku';
-import { storeToRefs } from 'pinia';
 
 const sudokuStore = useSudokuStore();
 const { newGame } = sudokuStore;
-const { hint } = storeToRefs(sudokuStore);
 
 useGlobalInputs();
 newGame('easy');
@@ -31,7 +29,6 @@ newGame('easy');
       </aside>
     </main>
   </div>
-  <div class="hint-message">{{ hint?.message }}</div>
 </template>
 
 <style scoped lang="scss">
@@ -44,7 +41,7 @@ newGame('easy');
 main {
   padding: 50px;
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto 296px;
   gap: 20px;
 }
 

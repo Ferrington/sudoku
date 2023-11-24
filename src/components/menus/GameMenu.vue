@@ -17,7 +17,7 @@ type Solution = {
 
 const sudokuStore = useSudokuStore();
 const { newGame, importGame, isCorrect, isComplete, clearSelected } = sudokuStore;
-const { solutionReady, difficulty } = storeToRefs(sudokuStore);
+const { difficulty } = storeToRefs(sudokuStore);
 const showModal = ref(false);
 const solution = ref<Solution>({
   message: '',
@@ -79,7 +79,6 @@ function checkSolution() {
           size="small"
           severity="secondary"
           @click="checkSolution"
-          :loading="!solutionReady"
         />
         <Button
           label="New Game"

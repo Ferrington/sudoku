@@ -25,6 +25,7 @@ export type Hint = {
   primaryCells: string[];
   secondaryCells: string[];
   incorrectCells: string[];
+  heading: string;
   message: string;
 };
 

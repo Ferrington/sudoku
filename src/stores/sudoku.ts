@@ -16,7 +16,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   const difficulty = ref<Difficulty | 'imported'>('easy');
   const history = useHistory(sudokuGrid);
   const selected = useSelected(sudokuGrid);
-  const { solvedGrid, solutionReady, solve } = useSolve();
+  const { solvedGrid } = useSolve();
   const { hint, getHint: _getHint, clearHint } = useHint(sudokuGrid, solvedGrid);
 
   const formattedDifficulty = computed(() => {
@@ -25,25 +25,17 @@ export const useSudokuStore = defineStore('sudoku', () => {
 
   function newGame(diff: Difficulty) {
     clearHint();
-    solutionReady.value = false;
-    const puzzle = generateSudoku(diff);
-    sudokuGrid.value = puzzle;
+    const sudoku = getSudoku(diff);
+    sudokuGrid.value = generateBoardFromString(sudoku.puzzle);
+    solvedGrid.value = generateBoardFromString(sudoku.solution);
     difficulty.value = diff;
-    solve(puzzle);
   }
 
   function importGame(grid: SudokuGrid, solved: SudokuGrid) {
+    clearHint();
     sudokuGrid.value = grid;
     solvedGrid.value = solved;
     difficulty.value = 'imported';
-  }
-
-  function generateSudoku(difficulty: Difficulty) {
-    const sudoku = getSudoku(difficulty);
-    return generateBoardFromString(sudoku.puzzle);
-    // return generateBoardFromString(
-    //   '078000000400090307090200050000040900003501280000600000205060000000000000000080190'
-    // );
   }
 
   function isCorrect() {
@@ -72,7 +64,6 @@ export const useSudokuStore = defineStore('sudoku', () => {
   return {
     sudokuGrid,
     difficulty: formattedDifficulty,
-    solutionReady,
     newGame,
     importGame,
     isCorrect,
