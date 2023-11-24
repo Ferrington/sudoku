@@ -13,13 +13,13 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@vueuse/core": "^10.6.1",
     "combinations-generator": "^1.0.1",
     "pinia": "^2.1.7",
     "primeicons": "^6.0.1",
     "primevue": "^3.41.1",
     "sudoku-gen": "^1.0.2",
-    "vue": "^3.3.4"
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",
