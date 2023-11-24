@@ -88,7 +88,14 @@ function checkSolution() {
       </div>
     </div>
 
-    <Dialog v-model:visible="showModal" position="top" modal dismissable-mask header="New Game">
+    <Dialog
+      v-model:visible="showModal"
+      position="top"
+      :draggable="false"
+      modal
+      dismissable-mask
+      header="New Game"
+    >
       <NewGameMenu @new-game="startNewGame" @import-game="startImportGame" />
     </Dialog>
   </div>
