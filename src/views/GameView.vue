@@ -6,8 +6,7 @@ import SudokuGrid from '@/components/sudoku/SudokuGrid.vue';
 import { useGlobalInputs } from '@/composables/globalInputs';
 import { useSudokuStore } from '@/stores/sudoku';
 
-const sudokuStore = useSudokuStore();
-const { newGame } = sudokuStore;
+const { newGame } = useSudokuStore();
 
 useGlobalInputs();
 newGame('easy');
