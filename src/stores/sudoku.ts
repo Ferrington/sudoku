@@ -39,7 +39,7 @@ export const useSudokuStore = defineStore('sudoku', () => {
   }
 
   function isCorrect() {
-    return _isCorrect(sudokuGrid, solvedGrid);
+    return _isCorrect(sudokuGrid.value, solvedGrid.value);
   }
 
   function isComplete() {
