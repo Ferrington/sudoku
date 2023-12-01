@@ -20,7 +20,7 @@ export function useHint(sudokuGrid: Ref<SudokuGrid>, solvedGrid: Ref<SudokuGrid>
   function getHint() {
     clearHint();
 
-    if (!isCorrect(sudokuGrid, solvedGrid)) {
+    if (!isCorrect(sudokuGrid.value, solvedGrid.value)) {
       highlightIncorrectCells();
       console.log('!! Board is wrong !!');
       return;
