@@ -28,7 +28,7 @@
 [![Typescript](https://img.shields.io/badge/Typescript-d7d7db?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Vue.js](https://img.shields.io/badge/Vue.js-d7d7db?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)](https://vuejs.org/)
 
-Component Library: [PrimeVue](https://primevue.org/)
+Component Library: [PrimeVue](https://primevue.org/)<br />
 Puzzle Generation: [SudokuGen](https://www.npmjs.com/package/sudoku-gen)
 
 <!-- CONTACT -->
