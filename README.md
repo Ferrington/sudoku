@@ -21,7 +21,7 @@
 
 <!-- ABOUT THE PROJECT -->
 
-[![Sudoku Screen Shot][product-screenshot]](https://example.com)
+[![Sudoku Screen Shot][product-screenshot]](https://ferrington.github.io/sudoku)
 
 ### Built With
 
