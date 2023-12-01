@@ -8,7 +8,7 @@
 <h3 align="center">Sudoku</h3>
 
   <p align="center">
-    A feature-filled Sudoku game with the ability to give hints
+    A feature-filled Sudoku game with hints
     <br />
     <br />
     <a href="https://ferrington.github.io/sudoku">Play!</a>
